@@ -42,7 +42,7 @@ try:
         if not is_archived:
             rows.append({
                 "id": page["id"],
-                "Item": p["Item"]["title"][0]["text"]["content"] if p["Name"]["title"] else "Untitled",
+                "Item": p["Item"]["title"][0]["text"]["content"] if p["Item"]["title"] else "Untitled",
                 "Cost": p["Cost"]["number"] or 0,
                 "Who": p["Who"]["select"]["name"] if p["Who"]["select"] else "Unknown"
             })
