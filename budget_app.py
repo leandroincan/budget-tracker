@@ -1,8 +1,5 @@
 # Leandro Pereira
 import streamlit as st
-from notion_client import Client
-import pandas as pd
-from datetime import datetime
 
 # This CSS hides the 'Made with Streamlit' footer and the red header line
 hide_st_style = """
@@ -13,6 +10,12 @@ hide_st_style = """
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+from notion_client import Client
+import pandas as pd
+from datetime import datetime
+
+
 
 # --- CONFIGURATION ---
 # This looks for the keys in the cloud's secure vault
