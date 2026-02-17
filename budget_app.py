@@ -32,24 +32,28 @@ with st.form("add_expense", clear_on_submit=True):
             st.success("Added!")
             st.rerun()
 
-# 4. Data Fetching
+# 4. Data Fetching (Safe Mode)
 try:
-    response = notion.databases.query(
-        database_id=DATABASE_ID,
-        filter={"property": "Archived", "checkbox": {"equals": False}}
-    )
+    # This version fetches everything and filters inside the app
+    response = notion.databases.query(database_id=DATABASE_ID)
     
     rows = []
     for page in response["results"]:
         p = page["properties"]
-        rows.append({
-            "id": page["id"],
-            "Name": p["Name"]["title"][0]["text"]["content"] if p["Name"]["title"] else "Untitled",
-            "Cost": p["Cost"]["number"] or 0,
-            "Who": p["Who"]["select"]["name"] if p["Who"]["select"] else "Unknown"
-        })
+        
+        # Check if 'Archived' exists and if it's checked
+        is_archived = False
+        if "Archived" in p and p["Archived"]["type"] == "checkbox":
+            is_archived = p["Archived"]["checkbox"]
+            
+        if not is_archived:
+            rows.append({
+                "id": page["id"],
+                "Name": p["Name"]["title"][0]["text"]["content"] if p["Name"]["title"] else "Untitled",
+                "Cost": p["Cost"]["number"] or 0,
+                "Who": p["Who"]["select"]["name"] if p["Who"]["select"] else "Unknown"
+            })
     df = pd.DataFrame(rows)
-
     # 5. Math & Display
     if not df.empty:
         total = df["Cost"].sum()
