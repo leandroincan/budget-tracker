@@ -2,52 +2,64 @@ import streamlit as st
 from notion_client import Client
 import pandas as pd
 
-# 1. Setup
+# Setup
 NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-st.title("💰 Budget Debug Mode")
+st.title("💰 Budget Tracker")
 
-# 2. Add Expense
-with st.form("add"):
-    name = st.text_input("Item")
-    cost = st.number_input("Cost")
-    who = st.selectbox("Who?", ["Leandro", "Jonas"])
-    if st.form_submit_button("Add"):
-        notion.pages.create(
-            parent={"database_id": DATABASE_ID},
-            properties={
-                "Name": {"title": [{"text": {"content": name}}]},
-                "Cost": {"number": cost},
-                "Who": {"select": {"name": who}}
-            }
-        )
-        st.rerun()
+# 1. Add Expense
+with st.form("add_expense", clear_on_submit=True):
+    name = st.text_input("What did you buy?")
+    cost = st.number_input("How much?", min_value=0.0)
+    who = st.selectbox("Who paid?", ["Leandro", "Jonas"])
+    if st.form_submit_button("Add Expense"):
+        if name and cost > 0:
+            notion.pages.create(
+                parent={"database_id": DATABASE_ID},
+                properties={
+                    "Name": {"title": [{"text": {"content": name}}]},
+                    "Cost": {"number": cost},
+                    "Who": {"select": {"name": who}},
+                    "Archived": {"checkbox": False}
+                }
+            )
+            st.rerun()
 
-# 3. Fetch Everything (Compatible Version)
+# 2. Fetch Data (The syntax fix)
 try:
-    # We use the search or direct query approach
-    response = notion.databases.query(**{"database_id": DATABASE_ID})
-    st.write(f"Connected! Found {len(response['results'])} items.")
+    # This is the modern way to query
+    response = notion.databases.query(database_id=DATABASE_ID)
+    results = response.get("results")
     
     rows = []
-    for page in response["results"]:
+    for page in results:
         p = page["properties"]
-        # Super safe property grabbing
-        row_name = p.get("Name", {}).get("title", [{}])[0].get("text", {}).get("content", "N/A")
-        row_cost = p.get("Cost", {}).get("number", 0)
-        row_who = p.get("Who", {}).get("select", {}).get("name", "N/A")
+        # Only show if NOT archived
+        is_archived = p.get("Archived", {}).get("checkbox", False)
         
-        rows.append({"Name": row_name, "Cost": row_cost, "Who": row_who})
+        if not is_archived:
+            rows.append({
+                "id": page["id"],
+                "Name": p["Name"]["title"][0]["text"]["content"] if p["Name"]["title"] else "Untitled",
+                "Cost": p["Cost"]["number"] or 0,
+                "Who": p["Who"]["select"]["name"] if p["Who"]["select"] else "Unknown"
+            })
     
     df = pd.DataFrame(rows)
-    st.table(df)
+
+    if not df.empty:
+        total = df["Cost"].sum()
+        st.metric("Total", f"${total:,.2f}")
+        st.table(df[["Name", "Cost", "Who"]])
+        
+        if st.button("Clear Round"):
+            for pid in df["id"]:
+                notion.pages.update(page_id=pid, properties={"Archived": {"checkbox": True}})
+            st.rerun()
+    else:
+        st.info("No active expenses.")
 
 except Exception as e:
-    # If the above fails, try the most basic query possible
-    try:
-        response = notion.databases.query(database_id=DATABASE_ID)
-        st.write("Connected via backup method!")
-    except Exception as e2:
-        st.error(f"Connection Error: {e2}")
+    st.error(f"Error: {e}")
