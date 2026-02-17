@@ -1,12 +1,13 @@
 # Leandro Pereira
 import streamlit as st
-
-# This CSS hides the 'Made with Streamlit' footer and the red header line
+# More aggressive CSS to hide all Streamlit branding
 hide_st_style = """
             <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            #MainMenu {visibility: hidden !important;}
+            header {visibility: hidden !important;}
+            #stDecoration {display:none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
