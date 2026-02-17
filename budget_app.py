@@ -52,7 +52,7 @@ try:
     if not df.empty:
         total = df["Cost"].sum()
         st.metric("Total", f"${total:,.2f}")
-        st.table(df[["Name", "Cost", "Who"]])
+        st.table(df[["Item", "Cost", "Who"]])
         
         if st.button("Clear Round"):
             for pid in df["id"]:
