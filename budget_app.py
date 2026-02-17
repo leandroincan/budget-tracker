@@ -23,7 +23,7 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 st.title("💰 Our Budget Tracker")
 
 # --- 3. INPUT FORM ---
-categories = ["Groceries 🛒", "Dining Out 🍕", "Rent/Bills 🏠", "Gas/Transport 🚗", "Entertainment 🍿", "Pharmacy/Health 💊", "Other 📦"]
+categories = ["Superstore", "Safeway", "Dollarama", "Walmart, "Others"]
 
 with st.form("expense_form", clear_on_submit=True):
     # Dropdown for category
