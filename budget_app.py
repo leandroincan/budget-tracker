@@ -15,7 +15,7 @@ try:
 except Exception as e:
     st.error(f"Connection Error: {e}")
 
-st.title("💸 Couple's Budget Tracker")
+st.title("💸 Leonas Budget Tracker")
 
 # --- INPUT FORM ---
 with st.form("budget_form", clear_on_submit=True):
@@ -24,7 +24,7 @@ with st.form("budget_form", clear_on_submit=True):
     cost = col2.number_input("Cost ($)", min_value=0.0, step=0.01)
 
     # These options must match the 'Select' options in Notion exactly
-    who = st.selectbox("Who Paid?", ["Leandro", "Partner"])
+    who = st.selectbox("Who Paid?", ["Leandro", "Jonas"])
 
     submitted = st.form_submit_button("Add Expense")
 
