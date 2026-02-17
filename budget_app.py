@@ -91,7 +91,12 @@ try:
 
         # Display list of items
         st.subheader("Current Expenses")
-        st.dataframe(df[["Item", "Cost", "Who"]], use_container_width=True, hide_index=True)
+        
+        # This line adds the $ sign and ensures 2 decimal places in the table
+        df_display = df.copy()
+        df_display["Cost"] = df_display["Cost"].map("${:,.2f}".format)
+        
+        st.dataframe(df_display[["Item", "Cost", "Who"]], use_container_width=True, hide_index=True)
 
         # Archive Button
         st.divider()
