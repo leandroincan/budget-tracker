@@ -12,7 +12,7 @@ st.title("💰 Budget Tracker")
 # 1. Add Expense
 with st.form("add_expense", clear_on_submit=True):
     name = st.text_input("What did you buy?")
-    cost = st.number_input("How much?", min_value=0.0)
+    cost = st.number_input("Price?", min_value=0.0)
     who = st.selectbox("Who paid?", ["Leandro", "Jonas"])
     if st.form_submit_button("Add Expense"):
         if name and cost > 0:
