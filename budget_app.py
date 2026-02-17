@@ -23,20 +23,30 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 st.title("💰 Our Budget Tracker")
 
 # --- 3. INPUT FORM ---
+categories = ["Groceries 🛒", "Dining Out 🍕", "Rent/Bills 🏠", "Gas/Transport 🚗", "Entertainment 🍿", "Pharmacy/Health 💊", "Other 📦"]
+
 with st.form("expense_form", clear_on_submit=True):
-    item_name = st.text_input("What did you buy?", placeholder="e.g. Groceries")
+    # Dropdown for category
+    category = st.selectbox("Category", options=categories)
+    
+    # Optional text for specifics (e.g., "Sushi" or "Costco")
+    details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Costco, Rent")
+    
+    # Currency input
     cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f")
+    
     who = st.selectbox("Who paid?", ["Leandro", "Jonas"])
     submitted = st.form_submit_button("Add Expense")
 
-    if submitted and item_name and cost > 0:
-        # Automatically get today's date in YYYY-MM-DD format
+    if submitted and cost > 0:
+        # Combine category and details for the 'Item' column
+        final_item_name = f"{category}: {details}" if details else category
         today = datetime.now().strftime("%Y-%m-%d")
         
         notion.pages.create(
             parent={"database_id": DATABASE_ID},
             properties={
-                "Item": {"title": [{"text": {"content": item_name}}]},
+                "Item": {"title": [{"text": {"content": final_item_name}}]},
                 "Cost": {"number": cost},
                 "Who": {"select": {"name": who}},
                 "Date": {"date": {"start": today}},
@@ -60,7 +70,6 @@ try:
             title_list = p.get("Item", {}).get("title", [])
             item_val = title_list[0]["text"]["content"] if title_list else "Untitled"
             
-            # Grab the date safely
             date_val = p.get("Date", {}).get("date", {})
             date_str = date_val.get("start", "No Date") if date_val else "No Date"
             
@@ -97,12 +106,16 @@ try:
         # Display list of items
         st.subheader("Current Expenses")
         
-        # Format for display (Add $ sign to table)
         df_display = df.copy()
+        # Format Cost column for the table
         df_display["Cost"] = df_display["Cost"].map("${:,.2f}".format)
         
-        # Show table with the new Date column
-        st.dataframe(df_display[["Date", "Item", "Cost", "Who"]], use_container_width=True, hide_index=True)
+        # Display table with Date first
+        st.dataframe(
+            df_display[["Date", "Item", "Cost", "Who"]], 
+            use_container_width=True, 
+            hide_index=True
+        )
 
         st.divider()
         if st.button("Clear & Start New Round"):
@@ -110,7 +123,7 @@ try:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
     else:
-        st.info("No active expenses.")
+        st.info("No active expenses. Start logging!")
 
 except Exception as e:
     st.error(f"Connection Error: {e}")
