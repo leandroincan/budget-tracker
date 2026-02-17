@@ -19,7 +19,7 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-st.title("💰 Our Budget Tracker")
+st.title("💰 Leonas Budget Tracker")
 
 # --- 3. INPUT FORM ---
 with st.form("expense_form", clear_on_submit=True):
@@ -67,7 +67,7 @@ try:
     # --- 5. DASHBOARD & MATH ---
     if not df.empty:
         total = df["Cost"].sum()
-        st.metric("Total Shared Spend", f"${total:,.2f}")
+        st.metric("Total", f"${total:,.2f}")
         
         # Calculate individual totals
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
