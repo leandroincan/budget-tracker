@@ -19,7 +19,7 @@ with st.form("add_expense", clear_on_submit=True):
             notion.pages.create(
                 parent={"database_id": DATABASE_ID},
                 properties={
-                    "Item": {"title": [{"text": {"content": name}}]},
+                    "Item": {"title": [{"text": {"content": item}}]},
                     "Cost": {"number": cost},
                     "Who": {"select": {"name": who}},
                     "Archived": {"checkbox": False}
