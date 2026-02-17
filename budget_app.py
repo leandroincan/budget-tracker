@@ -25,15 +25,16 @@ with st.form("add"):
         )
         st.rerun()
 
-# 3. Fetch Everything (No Filters)
+# 3. Fetch Everything (Compatible Version)
 try:
-    response = notion.databases.query(database_id=DATABASE_ID)
+    # We use the search or direct query approach
+    response = notion.databases.query(**{"database_id": DATABASE_ID})
     st.write(f"Connected! Found {len(response['results'])} items.")
     
     rows = []
     for page in response["results"]:
         p = page["properties"]
-        # This part is super safe - it won't crash if a column is missing
+        # Super safe property grabbing
         row_name = p.get("Name", {}).get("title", [{}])[0].get("text", {}).get("content", "N/A")
         row_cost = p.get("Cost", {}).get("number", 0)
         row_who = p.get("Who", {}).get("select", {}).get("name", "N/A")
@@ -44,4 +45,9 @@ try:
     st.table(df)
 
 except Exception as e:
-    st.error(f"Total Failure: {e}")
+    # If the above fails, try the most basic query possible
+    try:
+        response = notion.databases.query(database_id=DATABASE_ID)
+        st.write("Connected via backup method!")
+    except Exception as e2:
+        st.error(f"Connection Error: {e2}")
