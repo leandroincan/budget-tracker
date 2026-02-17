@@ -1,97 +1,74 @@
-# Leandro Pereira
 import streamlit as st
-# More aggressive CSS to hide all Streamlit branding
+from notion_client import Client
+import pandas as pd
+
+# --- CONFIGURATION ---
+NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
+DATABASE_ID = st.secrets["DATABASE_ID"]
+
+notion = Client(auth=NOTION_TOKEN)
+
+# HIDE STREAMLIT BRANDING
 hide_st_style = """
             <style>
             [data-testid="stToolbar"] {visibility: hidden !important;}
             footer {visibility: hidden !important;}
-            #MainMenu {visibility: hidden !important;}
             header {visibility: hidden !important;}
-            #stDecoration {display:none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-from notion_client import Client
-import pandas as pd
-from datetime import datetime
-
-
-
-# --- CONFIGURATION ---
-# This looks for the keys in the cloud's secure vault
-NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
-DATABASE_ID = st.secrets["DATABASE_ID"]
-
-# Initialize connection
-try:
-    notion = Client(auth=NOTION_TOKEN)
-except Exception as e:
-    st.error(f"Connection Error: {e}")
-
-st.title("💸 Leonas Budget Tracker")
+st.title("💰 Our Budget Tracker")
 
 # --- INPUT FORM ---
-with st.form("budget_form", clear_on_submit=True):
-    col1, col2 = st.columns(2)
-    item = col1.text_input("Item Name (e.g., Groceries)")
-    cost = col2.number_input("Cost ($)", min_value=0.0, step=0.01)
-
-    # These options must match the 'Select' options in Notion exactly
-    who = st.selectbox("Who Paid?", ["Leandro", "Jonas"])
-
+with st.form("expense_form", clear_on_submit=True):
+    name = st.text_input("What did you buy?")
+    cost = st.number_input("How much?", min_value=0.0, format="%.2f")
+    who = st.selectbox("Who paid?", ["Leandro", "Partner"]) # Change 'Partner' to real name
     submitted = st.form_submit_button("Add Expense")
 
-    if submitted and item and cost > 0:
-        try:
-            # Send data to Notion
-            notion.pages.create(
-                parent={"database_id": DATABASE_ID},
-                properties={
-                    "Name": {"title": [{"text": {"content": item}}]},
-                    "Cost": {"number": cost},
-                    "Who": {"select": {"name": who}},
-                    "Date": {"date": {"start": datetime.now().isoformat()}}
-                }
-            )
-            st.success(f"✅ Saved: {item} (${cost})")
-        except Exception as e:
-            st.error(f"❌ Error saving to Notion. Check your column names! Details: {e}")
-
-# --- VIEW DATA ---
-st.divider()
-st.subheader("Recent Expenses")
-
-# Get data from Notion
-try:
-    response = notion.databases.query(database_id=DATABASE_ID)
-
-    rows = []
-    # Loop through results and extract data
-    for page in response["results"]:
-        props = page["properties"]
-        try:
-            # Extracting values safely
-            row = {
-                "Date": props["Date"]["date"]["start"][:10],  # Get just YYYY-MM-DD
-                "Item": props["Name"]["title"][0]["text"]["content"],
-                "Cost": props["Cost"]["number"],
-                "Who": props["Who"]["select"]["name"]
+    if submitted and name:
+        notion.pages.create(
+            parent={"database_id": DATABASE_ID},
+            properties={
+                "Name": {"title": [{"text": {"content": name}}]},
+                "Cost": {"number": cost},
+                "Who": {"select": {"name": who}},
+                "Date": {"date": {"start": pd.Timestamp.now().strftime("%Y-%m-%d")}},
+                "Archived": {"checkbox": False}
             }
-            rows.append(row)
-        except (KeyError, IndexError):
-            continue  # Skip empty or malformed rows
+        )
+        st.success("Added!")
 
-    if rows:
-        df = pd.DataFrame(rows)
-        # Sort by date (newest first)
-        df = df.sort_values(by="Date", ascending=False)
-        st.dataframe(df, use_container_width=True)
+# --- FETCH DATA ---
+results = notion.databases.query(
+    database_id=DATABASE_ID,
+    filter={"property": "Archived", "checkbox": {"equals": False}} # Only show non-archived
+).get("results")
 
-        # Simple Chart
-        st.bar_chart(df.groupby("Who")["Cost"].sum())
-    else:
-        st.info("No expenses found yet. Add one above!")
+data = []
+for row in results:
+    data.append({
+        "id": row["id"],
+        "Name": row["properties"]["Name"]["title"][0]["text"]["content"],
+        "Cost": row["properties"]["Cost"]["number"],
+        "Who": row["properties"]["Who"]["select"]["name"],
+    })
 
-except Exception as e:
-    st.warning("Could not load data. Make sure you connected the integration to the page.")
+df = pd.DataFrame(data)
+
+# --- TOTALS & MATH ---
+if not df.empty:
+    total = df["Cost"].sum()
+    st.metric("Total This Round", f"${total:,.2f}")
+    
+    # Show the table
+    st.table(df[["Name", "Cost", "Who"]])
+
+    # --- THE CLEAR BUTTON ---
+    if st.button("Clear & Start New Round"):
+        for page_id in df["id"]:
+            notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
+        st.rerun()
+else:
+    st.write("No active expenses. Start adding some!")
