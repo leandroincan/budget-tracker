@@ -77,7 +77,7 @@ try:
     # --- 5. DASHBOARD & MATH ---
     if not df.empty:
         total = df["Cost"].sum()
-        st.metric("Total Shared Spend", f"${total:,.2f}")
+        st.metric("Total", f"${total:,.2f}")
         
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
