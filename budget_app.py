@@ -7,75 +7,41 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# 2. Hide Branding
-st.set_page_config(page_title="Budget Tracker", layout="centered")
-st.markdown("<style>footer {visibility: hidden;} header {visibility: hidden;}</style>", unsafe_allow_html=True)
+st.title("💰 Budget Debug Mode")
 
-st.title("💰 Our Budget Tracker")
+# 2. Add Expense
+with st.form("add"):
+    name = st.text_input("Item")
+    cost = st.number_input("Cost")
+    who = st.selectbox("Who?", ["Leandro", "Jonas"])
+    if st.form_submit_button("Add"):
+        notion.pages.create(
+            parent={"database_id": DATABASE_ID},
+            properties={
+                "Name": {"title": [{"text": {"content": name}}]},
+                "Cost": {"number": cost},
+                "Who": {"select": {"name": who}}
+            }
+        )
+        st.rerun()
 
-# 3. Input Form
-with st.form("add_expense", clear_on_submit=True):
-    name = st.text_input("Item Name")
-    cost = st.number_input("Cost", min_value=0.0, step=0.01)
-    who = st.selectbox("Who paid?", ["Leandro", "Jonas"])
-    if st.form_submit_button("Add Expense"):
-        if name and cost > 0:
-            notion.pages.create(
-                parent={"database_id": DATABASE_ID},
-                properties={
-                    "Name": {"title": [{"text": {"content": name}}]},
-                    "Cost": {"number": cost},
-                    "Who": {"select": {"name": who}},
-                    "Archived": {"checkbox": False}
-                }
-            )
-            st.success("Added!")
-            st.rerun()
-
-# 4. Data Fetching (Safe Mode)
+# 3. Fetch Everything (No Filters)
 try:
-    # This version fetches everything and filters inside the app
     response = notion.databases.query(database_id=DATABASE_ID)
+    st.write(f"Connected! Found {len(response['results'])} items.")
     
     rows = []
     for page in response["results"]:
         p = page["properties"]
+        # This part is super safe - it won't crash if a column is missing
+        row_name = p.get("Name", {}).get("title", [{}])[0].get("text", {}).get("content", "N/A")
+        row_cost = p.get("Cost", {}).get("number", 0)
+        row_who = p.get("Who", {}).get("select", {}).get("name", "N/A")
         
-        # Check if 'Archived' exists and if it's checked
-        is_archived = False
-        if "Archived" in p and p["Archived"]["type"] == "checkbox":
-            is_archived = p["Archived"]["checkbox"]
-            
-        if not is_archived:
-            rows.append({
-                "id": page["id"],
-                "Name": p["Name"]["title"][0]["text"]["content"] if p["Name"]["title"] else "Untitled",
-                "Cost": p["Cost"]["number"] or 0,
-                "Who": p["Who"]["select"]["name"] if p["Who"]["select"] else "Unknown"
-            })
+        rows.append({"Name": row_name, "Cost": row_cost, "Who": row_who})
+    
     df = pd.DataFrame(rows)
-    # 5. Math & Display
-    if not df.empty:
-        total = df["Cost"].sum()
-        st.metric("Total Bill", f"${total:,.2f}")
-        
-        l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
-        j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
-        
-        c1, c2 = st.columns(2)
-        c1.write(f"**Leandro:** ${l_spent:,.2f}")
-        c2.write(f"**Jonas:** ${j_spent:,.2f}")
+    st.table(df)
 
-        if l_spent > j_spent:
-            st.info(f"💡 Jonas owes Leandro: **${(l_spent - j_spent)/2:,.2f}**")
-        elif j_spent > l_spent:
-            st.info(f"💡 Leandro owes Jonas: **${(j_spent - l_spent)/2:,.2f}**")
-
-        st.dataframe(df[["Name", "Cost", "Who"]], use_container_width=True, hide_index=True)
-
-        if st.button("Clear / New Round"):
-            for pid in df["id"]:
-                notion.pages.update(page_id=pid, properties={"Archived": {"checkbox": True}})
-            st.rerun()
 except Exception as e:
-    st.error("Notion Connection Error. Please check if the 'Archived' checkbox exists in Notion.")
+    st.error(f"Total Failure: {e}")
