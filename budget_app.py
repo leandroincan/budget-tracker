@@ -1,6 +1,7 @@
 import streamlit as st
 from notion_client import Client
 import pandas as pd
+from datetime import datetime
 
 # --- 1. SETUP & CONFIG ---
 NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
@@ -19,7 +20,7 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-st.title("💰 Leonas Budget Tracker")
+st.title("💰 Our Budget Tracker")
 
 # --- 3. INPUT FORM ---
 with st.form("expense_form", clear_on_submit=True):
@@ -29,12 +30,16 @@ with st.form("expense_form", clear_on_submit=True):
     submitted = st.form_submit_button("Add Expense")
 
     if submitted and item_name and cost > 0:
+        # Automatically get today's date in YYYY-MM-DD format
+        today = datetime.now().strftime("%Y-%m-%d")
+        
         notion.pages.create(
             parent={"database_id": DATABASE_ID},
             properties={
                 "Item": {"title": [{"text": {"content": item_name}}]},
                 "Cost": {"number": cost},
                 "Who": {"select": {"name": who}},
+                "Date": {"date": {"start": today}},
                 "Archived": {"checkbox": False}
             }
         )
@@ -55,8 +60,13 @@ try:
             title_list = p.get("Item", {}).get("title", [])
             item_val = title_list[0]["text"]["content"] if title_list else "Untitled"
             
+            # Grab the date safely
+            date_val = p.get("Date", {}).get("date", {})
+            date_str = date_val.get("start", "No Date") if date_val else "No Date"
+            
             rows.append({
                 "id": page["id"],
+                "Date": date_str,
                 "Item": item_val,
                 "Cost": p.get("Cost", {}).get("number") or 0.0,
                 "Who": p.get("Who", {}).get("select", {}).get("name", "Unknown")
@@ -67,24 +77,19 @@ try:
     # --- 5. DASHBOARD & MATH ---
     if not df.empty:
         total = df["Cost"].sum()
-        st.metric("Total", f"${total:,.2f}")
+        st.metric("Total Shared Spend", f"${total:,.2f}")
         
-        # Calculate individual totals
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
         
-        # Settlement Logic (50/50 Split)
+        # 50/50 Split Logic
         if l_spent > j_spent:
-            leandro_owes = 0.00
-            jonas_owes = (l_spent - j_spent) / 2
+            leandro_owes, jonas_owes = 0.0, (l_spent - j_spent) / 2
         elif j_spent > l_spent:
-            leandro_owes = (j_spent - l_spent) / 2
-            jonas_owes = 0.00
+            leandro_owes, jonas_owes = (j_spent - l_spent) / 2, 0.0
         else:
-            leandro_owes = 0.00
-            jonas_owes = 0.00
+            leandro_owes, jonas_owes = 0.0, 0.0
 
-        # Display the specific owing lines
         st.markdown("### ⚖️ Balance")
         st.write(f"💳 **Leandro owes Jonas:** `${leandro_owes:,.2f}`")
         st.write(f"💳 **Jonas owes Leandro:** `${jonas_owes:,.2f}`")
@@ -92,20 +97,20 @@ try:
         # Display list of items
         st.subheader("Current Expenses")
         
-        # This line adds the $ sign and ensures 2 decimal places in the table
+        # Format for display (Add $ sign to table)
         df_display = df.copy()
         df_display["Cost"] = df_display["Cost"].map("${:,.2f}".format)
         
-        st.dataframe(df_display[["Item", "Cost", "Who"]], use_container_width=True, hide_index=True)
+        # Show table with the new Date column
+        st.dataframe(df_display[["Date", "Item", "Cost", "Who"]], use_container_width=True, hide_index=True)
 
-        # Archive Button
         st.divider()
         if st.button("Clear & Start New Round"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
     else:
-        st.info("No active expenses. Start logging!")
+        st.info("No active expenses.")
 
 except Exception as e:
     st.error(f"Connection Error: {e}")
