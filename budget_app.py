@@ -10,21 +10,18 @@ notion = Client(auth=NOTION_TOKEN)
 st.title("💰 Budget Tracker")
 
 # 1. Add Expense
-with st.form("add_expense", clear_on_submit=True):
-    name = st.text_input("What did you buy?")
-    cost = st.number_input("Price?", min_value=0.0)
-    who = st.selectbox("Who paid?", ["Leandro", "Jonas"])
-    if st.form_submit_button("Add Expense"):
+if st.form_submit_button("Add Expense"):
         if name and cost > 0:
             notion.pages.create(
                 parent={"database_id": DATABASE_ID},
                 properties={
-                    "Item": {"title": [{"text": {"content": name}}]},
+                    "Item": {"title": [{"text": {"content": name}}]}, # Use 'name' here
                     "Cost": {"number": cost},
                     "Who": {"select": {"name": who}},
                     "Archived": {"checkbox": False}
                 }
             )
+            st.success("Added!")
             st.rerun()
 
 # 2. Fetch Data (The syntax fix)
