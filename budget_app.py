@@ -27,7 +27,12 @@ categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 with st.form("expense_form", clear_on_submit=True):
     # Dropdown for category
-    category = st.selectbox("Category", options=categories, placeholder="Select")
+    category = st.selectbox(
+    "Category", 
+    options=categories, 
+    placeholder="Select a store...", 
+    index=None  # This allows the placeholder to show
+)
     
     # Optional text for specifics (e.g., "Sushi" or "Costco")
     details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
