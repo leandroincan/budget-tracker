@@ -48,6 +48,11 @@ st.markdown("""
         border: 1px solid #e0e0e0 !important;
         border-radius: 8px !important;
     }
+
+    /* Table styling to ensure it uses the full width */
+    table {
+        width: 100%;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -111,7 +116,6 @@ try:
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
-        # Bolded the label here
         st.metric("**Total Shared**", f"${total:,.2f}")
         
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
@@ -128,15 +132,8 @@ try:
         df_disp = df.copy()
         df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         
-        st.dataframe(
-            df_disp[["Date", "Item", "Cost", "Who"]], 
-            use_container_width=True, 
-            hide_index=True,
-            column_config={
-                "Cost": st.column_config.TextColumn("Cost", width="small"),
-                "Who": st.column_config.TextColumn("Who", width="small")
-            }
-        )
+        # CHANGED: Swapped st.dataframe to st.table for font control
+        st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
         if st.button("Clear & Start New Round", type="secondary"):
