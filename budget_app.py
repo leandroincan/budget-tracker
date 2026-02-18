@@ -8,41 +8,38 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# --- 2. UI STYLING ---
+# --- 2. UI STYLING (LIGHT MODE) ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
     <style>
-    /* Hide Streamlit elements */
+    /* Clean Hide */
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     
-    /* Base Button Style */
+    /* White background for the app */
+    .main { background-color: #ffffff; }
+
+    /* Blue Button with Hover Fix */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
-        height: 3em;
+        height: 3.2em;
         background-color: #007AFF;
-        color: white !important; /* Forces text to stay white */
+        color: white !important;
         font-weight: bold;
         border: none;
-        transition: background-color 0.2s ease;
+        transition: 0.2s;
     }
-
-    /* Fixes the white-out issue on hover */
     .stButton>button:hover {
         background-color: #0056b3 !important;
         color: white !important;
     }
 
-    /* Keeps it blue when clicked */
-    .stButton>button:active {
-        background-color: #004494 !important;
-        color: white !important;
-    }
-    
-    /* Prevents the button from turning white/grey after clicked */
-    .stButton>button:focus:not(:active) {
-        background-color: #007AFF;
-        color: white !important;
+    /* Light Grey Inputs for visibility */
+    div[data-baseweb="select"] > div, 
+    div[data-baseweb="input"] > div {
+        background-color: #f8f9fb !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -52,35 +49,33 @@ st.title("💰 Our Budget Tracker")
 # --- 3. INPUT SECTION (NO FORM) ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
-# We use columns to keep it tight
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
-details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
+details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
-# Regular button (No form = No "Press Enter" message)
+# Add spacing for mobile
+st.write("")
+
 if st.button("Add Expense"):
-    if category and who and cost:
+    if category and who and cost and cost > 0:
         final_item_name = f"{category}: {details}" if details else category
         today = datetime.now().strftime("%Y-%m-%d")
         
-        try:
-            notion.pages.create(
-                parent={"database_id": DATABASE_ID},
-                properties={
-                    "Item": {"title": [{"text": {"content": final_item_name}}]},
-                    "Cost": {"number": cost},
-                    "Who": {"select": {"name": who}},
-                    "Date": {"date": {"start": today}},
-                    "Archived": {"checkbox": False}
-                }
-            )
-            st.success("Added!")
-            st.rerun()
-        except Exception as e:
-            st.error(f"Error saving to Notion: {e}")
+        notion.pages.create(
+            parent={"database_id": DATABASE_ID},
+            properties={
+                "Item": {"title": [{"text": {"content": final_item_name}}]},
+                "Cost": {"number": cost},
+                "Who": {"select": {"name": who}},
+                "Date": {"date": {"start": today}},
+                "Archived": {"checkbox": False}
+            }
+        )
+        st.success("Added!")
+        st.rerun()
     else:
-        st.warning("Please fill out all fields.")
+        st.error("Please fill out Category, Amount, and Who paid.")
 
 # --- 4. DATA FETCHING ---
 try:
@@ -106,30 +101,35 @@ try:
     
     df = pd.DataFrame(rows)
 
-    # --- 5. DASHBOARD & MATH ---
+    # --- 5. DASHBOARD ---
     if not df.empty:
+        st.divider()
         total = df["Cost"].sum()
-        st.metric("Total", f"${total:,.2f}")
+        st.metric("Total Shared", f"${total:,.2f}")
         
+        # Split Math
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
         
-        leandro_owes = max(0.0, (j_spent - l_spent) / 2)
-        jonas_owes = max(0.0, (l_spent - j_spent) / 2)
+        l_owes = max(0.0, (j_spent - l_spent) / 2)
+        j_owes = max(0.0, (l_spent - j_spent) / 2)
 
-        st.markdown("### ⚖️ Balance")
-        st.write(f"💳 **Leandro owes Jonas:** `${leandro_owes:,.2f}`")
-        st.write(f"💳 **Jonas owes Leandro:** `${jonas_owes:,.2f}`")
+        col1, col2 = st.columns(2)
+        col1.write(f"💳 **Leandro owes:** `${l_owes:,.2f}`")
+        col2.write(f"💳 **Jonas owes:** `${j_owes:,.2f}`")
 
-        # Table Display
         st.subheader("Current Expenses")
-        df_display = df.copy()
-        df_display["Cost"] = df_display["Cost"].map("${:,.2f}".format)
+        df_disp = df.copy()
+        df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         
         st.dataframe(
-            df_display[["Date", "Item", "Cost", "Who"]], 
+            df_disp[["Date", "Item", "Cost", "Who"]], 
             use_container_width=True, 
-            hide_index=True
+            hide_index=True,
+            column_config={
+                "Cost": st.column_config.TextColumn("Cost", width="small"),
+                "Who": st.column_config.TextColumn("Who", width="small")
+            }
         )
 
         st.divider()
@@ -137,8 +137,5 @@ try:
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
-    else:
-        st.info("No active expenses.")
-
 except Exception as e:
-    st.error(f"Connection Error: {e}")
+    st.error(f"Error: {e}")
