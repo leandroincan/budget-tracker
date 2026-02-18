@@ -12,14 +12,37 @@ notion = Client(auth=NOTION_TOKEN)
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
     <style>
+    /* Hide Streamlit elements */
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
+    
+    /* Base Button Style */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
         height: 3em;
         background-color: #007AFF;
-        color: white;
+        color: white !important; /* Forces text to stay white */
         font-weight: bold;
+        border: none;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Fixes the white-out issue on hover */
+    .stButton>button:hover {
+        background-color: #0056b3 !important;
+        color: white !important;
+    }
+
+    /* Keeps it blue when clicked */
+    .stButton>button:active {
+        background-color: #004494 !important;
+        color: white !important;
+    }
+    
+    /* Prevents the button from turning white/grey after clicked */
+    .stButton>button:focus:not(:active) {
+        background-color: #007AFF;
+        color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
