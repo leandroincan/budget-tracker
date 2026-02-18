@@ -8,46 +8,50 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# --- 2. UI STYLING ---
+# --- 2. UI STYLING (LIGHT MODE) ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
     <style>
+    /* Clean Hide */
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
+    
+    /* White background for the app */
     .main { background-color: #ffffff; }
 
-    /* Global Font Size set to 16px */
-    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button {
-        font-size: 16px !important; 
+    /* Global Font Size Increase */
+    html, body, [class*="st-"] {
+        font-size: 105% !important;
     }
 
     /* Base Button Styling */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
-        height: 3.2em;
+        height: 3.5em;
         color: white !important;
         font-weight: bold;
         border: none;
         transition: 0.2s;
+        font-size: 1.1rem !important;
     }
 
-    /* ADD EXPENSE BUTTON (Green) */
+    /* Add Expense Button (GREEN) */
     div.stButton > button:not([kind="secondary"]) {
         background-color: #34C759 !important;
     }
-    div.stButton > button:not([kind="secondary"]):active {
+    div.stButton > button:not([kind="secondary"]):hover {
         background-color: #28a745 !important;
     }
 
-    /* CLEAR BUTTON (Light Blue to Dark Blue on press) */
+    /* Clear Button (DARK BLUE - kept as is) */
     div.stButton > button[kind="secondary"] {
-        background-color: #60A5FA !important; /* Light Blue */
+        background-color: #0056b3 !important;
     }
-    div.stButton > button[kind="secondary"]:active {
-        background-color: #1E40AF !important; /* Dark Blue when pressed */
+    div.stButton > button[kind="secondary"]:hover {
+        background-color: #004494 !important;
     }
 
-    /* Input styling */
+    /* Light Grey Inputs for visibility */
     div[data-baseweb="select"] > div, 
     div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
@@ -59,7 +63,7 @@ st.markdown("""
 
 st.title("💰 Our Budget Tracker")
 
-# --- 3. INPUT SECTION ---
+# --- 3. INPUT SECTION (NO FORM) ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
@@ -67,9 +71,9 @@ details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
+# Add spacing for mobile
 st.write("")
 
-# This button is Green
 if st.button("Add Expense"):
     if category and who and cost and cost > 0:
         final_item_name = f"{category}: {details}" if details else category
@@ -114,11 +118,13 @@ try:
     
     df = pd.DataFrame(rows)
 
+    # --- 5. DASHBOARD ---
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
         st.metric("Total Shared", f"${total:,.2f}")
         
+        # Split Math
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
         
@@ -144,7 +150,7 @@ try:
         )
 
         st.divider()
-        # This button is Light Blue (Dark Blue when clicked)
+        # Using type="secondary" targets the Blue CSS style we defined
         if st.button("Clear & Start New Round", type="secondary"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
