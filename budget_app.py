@@ -15,12 +15,12 @@ st.markdown("""
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* Force 14px on EVERYTHING including the static table */
+    /* Force 14px on EVERYTHING */
     html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
         font-size: 14px !important; 
     }
 
-    /* Base Button Styling */
+    /* Target ALL buttons first */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
@@ -28,40 +28,30 @@ st.markdown("""
         color: white !important;
         font-weight: bold;
         border: none;
-        transition: 0.2s;
     }
 
-    /* --- THE FIX: ADD EXPENSE BUTTON (FORCE GREEN) --- */
-    /* We target the primary button specifically to beat Streamlit's default blue */
-    .stButton > button[kind="primary"], 
-    .stButton > button:first-child:not([kind="secondary"]) {
+    /* FORCE GREEN: Using the 'base' button class to override Streamlit blue */
+    div.stButton > button {
         background-color: #34C759 !important;
-        background: #34C759 !important;
+        color: white !important;
     }
 
-    /* CLEAR BUTTON (Original Blue) */
+    /* FORCE BLUE: Only for the one we mark as 'secondary' */
     div.stButton > button[kind="secondary"] {
         background-color: #007AFF !important;
-        background: #007AFF !important;
+        color: white !important;
     }
 
     /* Input styling */
-    div[data-baseweb="select"] > div, 
-    div[data-baseweb="input"] > div {
+    div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
         border: 1px solid #e0e0e0 !important;
         border-radius: 8px !important;
     }
 
-    /* Table styling to ensure it uses the full width */
-    table {
-        width: 100%;
-    }
+    table { width: 100%; }
     </style>
     """, unsafe_allow_html=True)
-
-# Important: Add this right before your "Add Expense" button to tell Streamlit it's the primary action
-# if st.button("Add Expense", type="primary"):
 
 st.title("💰 Our Budget Tracker")
 
