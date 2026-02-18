@@ -8,52 +8,43 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# --- 2. UI STYLING (LIGHT MODE) ---
+# --- 2. UI STYLING ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
     <style>
-    /* Clean Hide */
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     
-    /* White background for the app */
-    .main { background-color: #ffffff; }
-
-    /* GREEN Button with Hover Fix */
-    .stButton>button {
+    /* ADD BUTTON (Green) */
+    div.stButton > button:first-child {
         width: 100%;
-        border-radius: 12px;
+        border-radius: 10px;
         height: 3.5em;
-        background-color: #34C759; /* iOS Success Green */
+        background-color: #34C759; /* Green */
         color: white !important;
         font-weight: bold;
         border: none;
-        transition: 0.2s ease;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05); /* Soft shadow for 'app' feel */
     }
-    
-    /* Darker green on hover/tap */
-    .stButton>button:hover {
+    div.stButton > button:first-child:hover {
         background-color: #28a745 !important;
         color: white !important;
-        transform: translateY(-1px); /* Slight lift effect */
     }
 
-    /* Active/Pressed State */
-    .stButton>button:active {
-        background-color: #1e7e34 !important;
-        transform: translateY(0px);
+    /* CLEAR BUTTON (Dark Blue) - Targeting the second button type on page */
+    div.stButton > button[kind="secondary"] {
+        background-color: #0056b3; 
+        color: white !important;
+        border: none;
     }
-
-    /* Input styling for Light Mode */
-    div[data-baseweb="select"] > div, 
-    div[data-baseweb="input"] > div {
+    
+    /* Input Styling */
+    div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
-        border: 1px solid #e0e0e0 !important;
         border-radius: 10px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
+st.title("💰 Our Budget Tracker")
 # --- 3. INPUT SECTION (NO FORM) ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
