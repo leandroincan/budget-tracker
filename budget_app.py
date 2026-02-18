@@ -8,6 +8,7 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
+# --- 2. UI STYLING ---
 # --- 2. UI STYLING (LIGHT MODE) ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
@@ -54,17 +55,58 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+
+st.set_page_config(page_title="Budget Tracker", layout="centered")
+st.markdown("""
+    <style>
+    [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
+    .main { background-color: #ffffff; }
+
+    /* Force 14px on EVERYTHING */
+    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
+        font-size: 14px !important; 
+    }
+
+    /* 1. Set EVERY button on the page to GREEN by default */
+    .stButton > button {
+        width: 100%;
+        border-radius: 10px;
+        height: 3.2em;
+        background-color: #34C759 !important; /* THE GREEN */
+        color: white !important;
+        font-weight: bold;
+        border: none !important;
+        transition: 0.2s;
+    }
+
+    /* 2. SPECIFICALLY set the 'secondary' button back to BLUE */
+    /* This overrides the green rule above ONLY for the Clear button */
+    .stButton > button[kind="secondary"] {
+        background-color: #007AFF !important; /* THE BLUE */
+    }
+
+    /* Input styling */
+    div[data-baseweb="select"] > div, 
+    div[data-baseweb="input"] > div {
+        background-color: #f8f9fb !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 8px !important;
+    }
+
+    table { width: 100%; }
+    </style>
+    """, unsafe_allow_html=True)
+
 st.title("💰 Our Budget Tracker")
 
-# --- 3. INPUT SECTION (NO FORM) ---
+# --- 3. INPUT SECTION ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
-details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
+details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
-# Add spacing for mobile
 st.write("")
 
 if st.button("Add Expense"):
@@ -115,9 +157,8 @@ try:
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
-        st.metric("Total Shared", f"${total:,.2f}")
+        st.metric("**Total Shared**", f"${total:,.2f}")
         
-        # Split Math
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
         
@@ -132,18 +173,10 @@ try:
         df_disp = df.copy()
         df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         
-        st.dataframe(
-            df_disp[["Date", "Item", "Cost", "Who"]], 
-            use_container_width=True, 
-            hide_index=True,
-            column_config={
-                "Cost": st.column_config.TextColumn("Cost", width="small"),
-                "Who": st.column_config.TextColumn("Who", width="small")
-            }
-        )
+        # Static table for font control
+        st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
-        # Using type="secondary" targets the Blue CSS style we defined
         if st.button("Clear & Start New Round", type="secondary"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
