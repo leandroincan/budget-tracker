@@ -9,6 +9,23 @@ DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
 # --- 2. UI STYLING ---
+
+# --- 2. HIDE BRANDING & UI ---
+st.set_page_config(page_title="Budget Tracker", layout="centered")
+hide_messages_style = """
+    <style>
+    /* Hides the "Press Enter to submit form" message */
+    .stForm [data-testid="stMarkdownContainer"] p {
+        display: none;
+    }
+    
+    /* Hides Streamlit branding */
+    [data-testid="stToolbar"], footer, header {
+        visibility: hidden !important;
+    }
+    </style>
+    """
+st.markdown(hide_messages_style, unsafe_allow_html=True)
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 hide_st_style = """
             <style>
