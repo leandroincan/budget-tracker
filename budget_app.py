@@ -15,12 +15,12 @@ st.markdown("""
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* Force 14px on EVERYTHING */
+    /* Force 14px on EVERYTHING including the static table */
     html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
         font-size: 14px !important; 
     }
 
-    /* Base Button Styling */
+    /* Button Styling */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
@@ -31,9 +31,8 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* THE FORCE GREEN FIX */
-    /* This targets the button specifically to override Streamlit's primary blue */
-    .stButton > button:first-of-type:not([kind="secondary"]) {
+    /* ADD EXPENSE BUTTON (Green) */
+    div.stButton > button:not([kind="secondary"]) {
         background-color: #34C759 !important;
     }
 
@@ -50,7 +49,10 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
-    table { width: 100%; }
+    /* Table styling to ensure it uses the full width */
+    table {
+        width: 100%;
+    }
     </style>
     """, unsafe_allow_html=True)
 
