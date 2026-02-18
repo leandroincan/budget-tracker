@@ -15,14 +15,15 @@ st.markdown("""
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* Force 16px on EVERYTHING: labels, inputs, table cells, and headers */
-    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, 
-    .stTable, [data-testid="stTable"], [data-testid="stDataFrame"], td, th {
+    /* 1. Force 16px on all standard text and inputs */
+    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button {
         font-size: 14px !important; 
-        font-family: sans-serif !important;
     }
 
-    /* Target the specific text inside Streamlit's new Dataframe component */
+    /* 2. Force 16px inside the Table/DataFrame */
+    /* This targets the actual data cells and the headers */
+    [data-testid="stDataFrame"] td, 
+    [data-testid="stDataFrame"] th,
     [data-testid="styled-canvas"] {
         font-size: 14px !important;
     }
@@ -51,7 +52,7 @@ st.markdown("""
     div.stButton > button[kind="secondary"] {
         background-color: #007AFF !important;
     }
-    div.stButton > button[kind="secondary"]:active {
+    div.stButton > button[kind="secondary"]):active {
         background-color: #0056b3 !important;
     }
 
