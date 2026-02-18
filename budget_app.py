@@ -18,13 +18,13 @@ st.markdown("""
     /* Force 16px on EVERYTHING: labels, inputs, table cells, and headers */
     html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, 
     .stTable, [data-testid="stTable"], [data-testid="stDataFrame"], td, th {
-        font-size: 16px !important; 
+        font-size: 15px !important; 
         font-family: sans-serif !important;
     }
 
     /* Target the specific text inside Streamlit's new Dataframe component */
     [data-testid="styled-canvas"] {
-        font-size: 16px !important;
+        font-size: 15px !important;
     }
 
     /* Base Button Styling */
@@ -36,7 +36,7 @@ st.markdown("""
         font-weight: bold;
         border: none;
         transition: 0.2s;
-        font-size: 16px !important;
+        font-size: 15px !important;
     }
 
     /* ADD EXPENSE BUTTON (Green) */
