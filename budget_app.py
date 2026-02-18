@@ -8,48 +8,49 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# --- 2. UI STYLING ---
+# --- 2. UI STYLING (LIGHT MODE) ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
     <style>
+    /* Clean Hide */
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     
-    /* ADD BUTTON (Green) */
-    div.stButton > button:first-child {
+    /* White background for the app */
+    .main { background-color: #ffffff; }
+
+    /* Blue Button with Hover Fix */
+    .stButton>button {
         width: 100%;
         border-radius: 10px;
-        height: 3.5em;
-        background-color: #34C759; /* Green */
+        height: 3.2em;
+        background-color: #007AFF;
         color: white !important;
         font-weight: bold;
         border: none;
+        transition: 0.2s;
     }
-    div.stButton > button:first-child:hover {
-        background-color: #28a745 !important;
+    .stButton>button:hover {
+        background-color: #0056b3 !important;
         color: white !important;
     }
 
-    /* CLEAR BUTTON (Dark Blue) - Targeting the second button type on page */
-    div.stButton > button[kind="secondary"] {
-        background-color: #0056b3; 
-        color: white !important;
-        border: none;
-    }
-    
-    /* Input Styling */
-    div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {
+    /* Light Grey Inputs for visibility */
+    div[data-baseweb="select"] > div, 
+    div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
-        border-radius: 10px !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
 st.title("💰 Our Budget Tracker")
+
 # --- 3. INPUT SECTION (NO FORM) ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
-details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
+details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
