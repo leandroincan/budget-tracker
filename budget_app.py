@@ -15,27 +15,36 @@ st.markdown("""
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* Force 14px on EVERYTHING */
-    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
-        font-size: 14px !important; 
+    /* Global Font Size set to 16px */
+    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button {
+        font-size: 16px !important; 
     }
 
-    /* 1. Set EVERY button on the page to GREEN by default */
-    .stButton > button {
+    /* Base Button Styling */
+    .stButton>button {
         width: 100%;
         border-radius: 10px;
         height: 3.2em;
-        background-color: #34C759 !important; /* THE GREEN */
         color: white !important;
         font-weight: bold;
-        border: none !important;
+        border: none;
         transition: 0.2s;
     }
 
-    /* 2. SPECIFICALLY set the 'secondary' button back to BLUE */
-    /* This overrides the green rule above ONLY for the Clear button */
-    .stButton > button[kind="secondary"] {
-        background-color: #007AFF !important; /* THE BLUE */
+    /* ADD EXPENSE BUTTON (Green) */
+    div.stButton > button:not([kind="secondary"]) {
+        background-color: #34C759 !important;
+    }
+    div.stButton > button:not([kind="secondary"]):active {
+        background-color: #28a745 !important;
+    }
+
+    /* CLEAR BUTTON (Light Blue to Dark Blue on press) */
+    div.stButton > button[kind="secondary"] {
+        background-color: #60A5FA !important; /* Light Blue */
+    }
+    div.stButton > button[kind="secondary"]:active {
+        background-color: #1E40AF !important; /* Dark Blue when pressed */
     }
 
     /* Input styling */
@@ -45,8 +54,6 @@ st.markdown("""
         border: 1px solid #e0e0e0 !important;
         border-radius: 8px !important;
     }
-
-    table { width: 100%; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -56,12 +63,13 @@ st.title("💰 Our Budget Tracker")
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
-details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
+details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
 st.write("")
 
+# This button is Green
 if st.button("Add Expense"):
     if category and who and cost and cost > 0:
         final_item_name = f"{category}: {details}" if details else category
@@ -106,11 +114,10 @@ try:
     
     df = pd.DataFrame(rows)
 
-    # --- 5. DASHBOARD ---
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
-        st.metric("**Total Shared**", f"${total:,.2f}")
+        st.metric("Total Shared", f"${total:,.2f}")
         
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
@@ -126,10 +133,18 @@ try:
         df_disp = df.copy()
         df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         
-        # Static table for font control
-        st.table(df_disp[["Date", "Item", "Cost", "Who"]])
+        st.dataframe(
+            df_disp[["Date", "Item", "Cost", "Who"]], 
+            use_container_width=True, 
+            hide_index=True,
+            column_config={
+                "Cost": st.column_config.TextColumn("Cost", width="small"),
+                "Who": st.column_config.TextColumn("Who", width="small")
+            }
+        )
 
         st.divider()
+        # This button is Light Blue (Dark Blue when clicked)
         if st.button("Clear & Start New Round", type="secondary"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
