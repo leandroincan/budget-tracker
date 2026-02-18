@@ -18,45 +18,38 @@ st.markdown("""
     /* White background for the app */
     .main { background-color: #ffffff; }
 
-    /* Global Font Size Increase */
-    html, body, [class*="st-"] {
-        font-size: 105% !important;
-    }
-
-    /* Base Button Styling */
+    /* GREEN Button with Hover Fix */
     .stButton>button {
         width: 100%;
-        border-radius: 10px;
+        border-radius: 12px;
         height: 3.5em;
+        background-color: #34C759; /* iOS Success Green */
         color: white !important;
         font-weight: bold;
         border: none;
-        transition: 0.2s;
-        font-size: 1.1rem !important;
+        transition: 0.2s ease;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05); /* Soft shadow for 'app' feel */
     }
-
-    /* Add Expense Button (GREEN) */
-    div.stButton > button:not([kind="secondary"]) {
-        background-color: #34C759 !important;
-    }
-    div.stButton > button:not([kind="secondary"]):hover {
+    
+    /* Darker green on hover/tap */
+    .stButton>button:hover {
         background-color: #28a745 !important;
+        color: white !important;
+        transform: translateY(-1px); /* Slight lift effect */
     }
 
-    /* Clear Button (DARK BLUE - kept as is) */
-    div.stButton > button[kind="secondary"] {
-        background-color: #0056b3 !important;
-    }
-    div.stButton > button[kind="secondary"]:hover {
-        background-color: #004494 !important;
+    /* Active/Pressed State */
+    .stButton>button:active {
+        background-color: #1e7e34 !important;
+        transform: translateY(0px);
     }
 
-    /* Light Grey Inputs for visibility */
+    /* Input styling for Light Mode */
     div[data-baseweb="select"] > div, 
     div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
         border: 1px solid #e0e0e0 !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
     }
     </style>
     """, unsafe_allow_html=True)
