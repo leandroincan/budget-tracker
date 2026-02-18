@@ -31,7 +31,7 @@ categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 # We use columns to keep it tight
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
-details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
+details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
