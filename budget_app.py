@@ -15,20 +15,12 @@ st.markdown("""
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* 1. Force 16px on all standard text and inputs */
-    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button {
-        font-size: 14px !important; 
+    /* Force 16px on EVERYTHING including the static table */
+    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
+        font-size: 16px !important; 
     }
 
-    /* 2. Force 16px inside the Table/DataFrame */
-    /* This targets the actual data cells and the headers */
-    [data-testid="stDataFrame"] td, 
-    [data-testid="stDataFrame"] th,
-    [data-testid="styled-canvas"] {
-        font-size: 14px !important;
-    }
-
-    /* Base Button Styling */
+    /* Button Styling */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
@@ -37,23 +29,16 @@ st.markdown("""
         font-weight: bold;
         border: none;
         transition: 0.2s;
-        font-size: 14px !important;
     }
 
     /* ADD EXPENSE BUTTON (Green) */
     div.stButton > button:not([kind="secondary"]) {
         background-color: #34C759 !important;
     }
-    div.stButton > button:not([kind="secondary"]):active {
-        background-color: #28a745 !important;
-    }
 
     /* CLEAR BUTTON (Original Blue) */
     div.stButton > button[kind="secondary"] {
         background-color: #007AFF !important;
-    }
-    div.stButton > button[kind="secondary"]):active {
-        background-color: #0056b3 !important;
     }
 
     /* Input styling */
