@@ -18,20 +18,37 @@ st.markdown("""
     /* White background for the app */
     .main { background-color: #ffffff; }
 
-    /* Blue Button with Hover Fix */
+    /* Global Font Size Increase */
+    html, body, [class*="st-"] {
+        font-size: 105% !important;
+    }
+
+    /* Base Button Styling */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
-        height: 3.2em;
-        background-color: #007AFF;
+        height: 3.5em;
         color: white !important;
         font-weight: bold;
         border: none;
         transition: 0.2s;
+        font-size: 1.1rem !important;
     }
-    .stButton>button:hover {
+
+    /* Add Expense Button (GREEN) */
+    div.stButton > button:not([kind="secondary"]) {
+        background-color: #34C759 !important;
+    }
+    div.stButton > button:not([kind="secondary"]):hover {
+        background-color: #28a745 !important;
+    }
+
+    /* Clear Button (DARK BLUE - kept as is) */
+    div.stButton > button[kind="secondary"] {
         background-color: #0056b3 !important;
-        color: white !important;
+    }
+    div.stButton > button[kind="secondary"]:hover {
+        background-color: #004494 !important;
     }
 
     /* Light Grey Inputs for visibility */
@@ -133,7 +150,8 @@ try:
         )
 
         st.divider()
-        if st.button("Clear & Start New Round"):
+        # Using type="secondary" targets the Blue CSS style we defined
+        if st.button("Clear & Start New Round", type="secondary"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
