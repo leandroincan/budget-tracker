@@ -71,7 +71,7 @@ st.title("💰 Our Budget Tracker")
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
-details = st.text_input("Details (Optional)", placeholder="e.g.Groceries")
+details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
