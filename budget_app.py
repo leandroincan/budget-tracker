@@ -15,7 +15,7 @@ st.markdown("""
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* Global Font Size set to 16px */
+    /* Font Size set to 16px */
     html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button {
         font-size: 16px !important; 
     }
@@ -39,12 +39,12 @@ st.markdown("""
         background-color: #28a745 !important;
     }
 
-    /* CLEAR BUTTON (Light Blue to Dark Blue on press) */
+    /* CLEAR BUTTON (The original Blue) */
     div.stButton > button[kind="secondary"] {
-        background-color: #60A5FA !important; /* Light Blue */
+        background-color: #007AFF !important;
     }
     div.stButton > button[kind="secondary"]:active {
-        background-color: #1E40AF !important; /* Dark Blue when pressed */
+        background-color: #0056b3 !important;
     }
 
     /* Input styling */
@@ -69,7 +69,6 @@ who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="S
 
 st.write("")
 
-# This button is Green
 if st.button("Add Expense"):
     if category and who and cost and cost > 0:
         final_item_name = f"{category}: {details}" if details else category
@@ -144,7 +143,6 @@ try:
         )
 
         st.divider()
-        # This button is Light Blue (Dark Blue when clicked)
         if st.button("Clear & Start New Round", type="secondary"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
