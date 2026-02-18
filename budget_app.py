@@ -20,30 +20,27 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
-    /* Target ALL buttons first */
-    .stButton>button {
+    /* 1. Set EVERY button on the page to GREEN by default */
+    .stButton > button {
         width: 100%;
         border-radius: 10px;
         height: 3.2em;
+        background-color: #34C759 !important; /* THE GREEN */
         color: white !important;
         font-weight: bold;
-        border: none;
+        border: none !important;
+        transition: 0.2s;
     }
 
-    /* FORCE GREEN: Using the 'base' button class to override Streamlit blue */
-    div.stButton > button {
-        background-color: #34C759 !important;
-        color: white !important;
-    }
-
-    /* FORCE BLUE: Only for the one we mark as 'secondary' */
-    div.stButton > button[kind="secondary"] {
-        background-color: #007AFF !important;
-        color: white !important;
+    /* 2. SPECIFICALLY set the 'secondary' button back to BLUE */
+    /* This overrides the green rule above ONLY for the Clear button */
+    .stButton > button[kind="secondary"] {
+        background-color: #007AFF !important; /* THE BLUE */
     }
 
     /* Input styling */
-    div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {
+    div[data-baseweb="select"] > div, 
+    div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
         border: 1px solid #e0e0e0 !important;
         border-radius: 8px !important;
