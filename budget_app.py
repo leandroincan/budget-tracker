@@ -8,14 +8,20 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# --- 2. HIDE BRANDING & UI ---
+# --- 2. UI STYLING ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 hide_st_style = """
             <style>
-            [data-testid="stToolbar"] {visibility: hidden !important;}
-            footer {visibility: hidden !important;}
-            header {visibility: hidden !important;}
+            [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
             #stDecoration {display:none !important;}
+            /* Makes the Add Expense button big and blue for mobile */
+            .stButton>button {
+                width: 100%;
+                border-radius: 10px;
+                height: 3em;
+                background-color: #007AFF;
+                color: white;
+            }
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -26,35 +32,33 @@ st.title("💰 Our Budget Tracker")
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 with st.form("expense_form", clear_on_submit=True):
-    # Dropdown for category
-    category = st.selectbox("Category", options=categories, placeholder="Select", index=None)  # This allows the placeholder to show
-    
-    # Optional text for specifics (e.g., "Sushi" or "Costco")
-    details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
-    
-    # Currency input
+    category = st.selectbox("Category", options=categories, placeholder="Select", index=None)
+    details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
     cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
-
-    who = st.selectbox("Who paid?", ["Leandro", "Jonas"],placeholder="Select", index=None)
+    who = st.selectbox("Who paid?", ["Leandro", "Jonas"], placeholder="Select", index=None)
+    
     submitted = st.form_submit_button("Add Expense")
 
-    if submitted and cost > 0:
-        # Combine category and details for the 'Item' column
-        final_item_name = f"{category}: {details}" if details else category
-        today = datetime.now().strftime("%Y-%m-%d")
-        
-        notion.pages.create(
-            parent={"database_id": DATABASE_ID},
-            properties={
-                "Item": {"title": [{"text": {"content": final_item_name}}]},
-                "Cost": {"number": cost},
-                "Who": {"select": {"name": who}},
-                "Date": {"date": {"start": today}},
-                "Archived": {"checkbox": False}
-            }
-        )
-        st.success(f"Added!")
-        st.rerun()
+    # Submission logic with safety checks
+    if submitted:
+        if category and who and cost and cost > 0:
+            final_item_name = f"{category}: {details}" if details else category
+            today = datetime.now().strftime("%Y-%m-%d")
+            
+            notion.pages.create(
+                parent={"database_id": DATABASE_ID},
+                properties={
+                    "Item": {"title": [{"text": {"content": final_item_name}}]},
+                    "Cost": {"number": cost},
+                    "Who": {"select": {"name": who}},
+                    "Date": {"date": {"start": today}},
+                    "Archived": {"checkbox": False}
+                }
+            )
+            st.success(f"Added!")
+            st.rerun()
+        else:
+            st.error("Please fill in Category, Amount, and Who paid.")
 
 # --- 4. DATA FETCHING ---
 try:
@@ -69,7 +73,6 @@ try:
         if not is_archived:
             title_list = p.get("Item", {}).get("title", [])
             item_val = title_list[0]["text"]["content"] if title_list else "Untitled"
-            
             date_val = p.get("Date", {}).get("date", {})
             date_str = date_val.get("start", "No Date") if date_val else "No Date"
             
@@ -92,29 +95,35 @@ try:
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
         
         # 50/50 Split Logic
-        if l_spent > j_spent:
-            leandro_owes, jonas_owes = 0.0, (l_spent - j_spent) / 2
-        elif j_spent > l_spent:
-            leandro_owes, jonas_owes = (j_spent - l_spent) / 2, 0.0
-        else:
-            leandro_owes, jonas_owes = 0.0, 0.0
+        leandro_owes = max(0.0, (j_spent - l_spent) / 2)
+        jonas_owes = max(0.0, (l_spent - j_spent) / 2)
 
         st.markdown("### ⚖️ Balance")
         st.write(f"💳 **Leandro owes Jonas:** `${leandro_owes:,.2f}`")
         st.write(f"💳 **Jonas owes Leandro:** `${jonas_owes:,.2f}`")
 
-        # Display list of items
+        # --- STORE SUMMARY TABLE ---
+        st.subheader("Summary by Category")
+        # Extract only the category name (before the colon) for grouping
+        df['Group'] = df['Item'].apply(lambda x: x.split(':')[0])
+        summary = df.groupby('Group')['Cost'].sum().reset_index()
+        summary['Cost'] = summary['Group'].map(lambda x: f"${summary.loc[summary['Group']==x, 'Cost'].values[0]:,.2f}")
+        st.table(summary)
+
         st.subheader("Current Expenses")
-        
         df_display = df.copy()
-        # Format Cost column for the table
         df_display["Cost"] = df_display["Cost"].map("${:,.2f}".format)
         
-        # Display table with Date first
+        # Display table with centered-feel via column configuration
         st.dataframe(
             df_display[["Date", "Item", "Cost", "Who"]], 
             use_container_width=True, 
-            hide_index=True
+            hide_index=True,
+            column_config={
+                "Date": st.column_config.TextColumn("Date", width="small"),
+                "Cost": st.column_config.TextColumn("Cost", width="small"),
+                "Who": st.column_config.TextColumn("Who", width="small")
+            }
         )
 
         st.divider()
