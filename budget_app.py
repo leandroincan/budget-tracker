@@ -27,12 +27,7 @@ categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
 with st.form("expense_form", clear_on_submit=True):
     # Dropdown for category
-    category = st.selectbox(
-    "Category", 
-    options=categories, 
-    placeholder="Select a store...", 
-    index=None  # This allows the placeholder to show
-)
+    category = st.selectbox("Category", options=categories, placeholder="Select", index=None)  # This allows the placeholder to show
     
     # Optional text for specifics (e.g., "Sushi" or "Costco")
     details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
@@ -40,7 +35,7 @@ with st.form("expense_form", clear_on_submit=True):
     # Currency input
     cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f")
     
-    who = st.selectbox("Who paid?", ["Leandro", "Jonas"])
+    who = st.selectbox("Who paid?", ["Leandro", "Jonas"],placeholder="Select", index=None)
     submitted = st.form_submit_button("Add Expense")
 
     if submitted and cost > 0:
