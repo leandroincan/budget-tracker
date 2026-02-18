@@ -9,59 +9,39 @@ DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
 # --- 2. UI STYLING ---
-
-# --- 2. HIDE BRANDING & UI ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
-hide_messages_style = """
+st.markdown("""
     <style>
-    /* Hides the "Press Enter to submit form" message */
-    .stForm [data-testid="stMarkdownContainer"] p {
-        display: none;
-    }
-    
-    /* Hides Streamlit branding */
-    [data-testid="stToolbar"], footer, header {
-        visibility: hidden !important;
+    [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
+    .stButton>button {
+        width: 100%;
+        border-radius: 10px;
+        height: 3em;
+        background-color: #007AFF;
+        color: white;
+        font-weight: bold;
     }
     </style>
-    """
-st.markdown(hide_messages_style, unsafe_allow_html=True)
-st.set_page_config(page_title="Budget Tracker", layout="centered")
-hide_st_style = """
-            <style>
-            [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
-            #stDecoration {display:none !important;}
-            /* Makes the Add Expense button big and blue for mobile */
-            .stButton>button {
-                width: 100%;
-                border-radius: 10px;
-                height: 3em;
-                background-color: #007AFF;
-                color: white;
-            }
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 st.title("💰 Our Budget Tracker")
 
-# --- 3. INPUT FORM ---
+# --- 3. INPUT SECTION (NO FORM) ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
-with st.form("expense_form", clear_on_submit=True):
-    category = st.selectbox("Category", options=categories, placeholder="Select", index=None)
-    details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
-    cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
-    who = st.selectbox("Who paid?", ["Leandro", "Jonas"], placeholder="Select", index=None)
-    
-    submitted = st.form_submit_button("Add Expense")
+# We use columns to keep it tight
+category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
+details = st.text_input("Details (Optional)", placeholder="e.g. Sushi, Rent")
+cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
+who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
 
-    # Submission logic with safety checks
-    if submitted:
-        if category and who and cost and cost > 0:
-            final_item_name = f"{category}: {details}" if details else category
-            today = datetime.now().strftime("%Y-%m-%d")
-            
+# Regular button (No form = No "Press Enter" message)
+if st.button("Add Expense"):
+    if category and who and cost:
+        final_item_name = f"{category}: {details}" if details else category
+        today = datetime.now().strftime("%Y-%m-%d")
+        
+        try:
             notion.pages.create(
                 parent={"database_id": DATABASE_ID},
                 properties={
@@ -72,10 +52,12 @@ with st.form("expense_form", clear_on_submit=True):
                     "Archived": {"checkbox": False}
                 }
             )
-            st.success(f"Added!")
+            st.success("Added!")
             st.rerun()
-        else:
-            st.error("Please fill in Category, Amount, and Who paid.")
+        except Exception as e:
+            st.error(f"Error saving to Notion: {e}")
+    else:
+        st.warning("Please fill out all fields.")
 
 # --- 4. DATA FETCHING ---
 try:
@@ -85,9 +67,7 @@ try:
     rows = []
     for page in results:
         p = page["properties"]
-        is_archived = p.get("Archived", {}).get("checkbox", False)
-        
-        if not is_archived:
+        if not p.get("Archived", {}).get("checkbox", False):
             title_list = p.get("Item", {}).get("title", [])
             item_val = title_list[0]["text"]["content"] if title_list else "Untitled"
             date_val = p.get("Date", {}).get("date", {})
@@ -111,7 +91,6 @@ try:
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
         
-        # 50/50 Split Logic
         leandro_owes = max(0.0, (j_spent - l_spent) / 2)
         jonas_owes = max(0.0, (l_spent - j_spent) / 2)
 
@@ -119,28 +98,15 @@ try:
         st.write(f"💳 **Leandro owes Jonas:** `${leandro_owes:,.2f}`")
         st.write(f"💳 **Jonas owes Leandro:** `${jonas_owes:,.2f}`")
 
-        # --- STORE SUMMARY TABLE ---
-        st.subheader("Summary by Category")
-        # Extract only the category name (before the colon) for grouping
-        df['Group'] = df['Item'].apply(lambda x: x.split(':')[0])
-        summary = df.groupby('Group')['Cost'].sum().reset_index()
-        summary['Cost'] = summary['Group'].map(lambda x: f"${summary.loc[summary['Group']==x, 'Cost'].values[0]:,.2f}")
-        st.table(summary)
-
+        # Table Display
         st.subheader("Current Expenses")
         df_display = df.copy()
         df_display["Cost"] = df_display["Cost"].map("${:,.2f}".format)
         
-        # Display table with centered-feel via column configuration
         st.dataframe(
             df_display[["Date", "Item", "Cost", "Who"]], 
             use_container_width=True, 
-            hide_index=True,
-            column_config={
-                "Date": st.column_config.TextColumn("Date", width="small"),
-                "Cost": st.column_config.TextColumn("Cost", width="small"),
-                "Who": st.column_config.TextColumn("Who", width="small")
-            }
+            hide_index=True
         )
 
         st.divider()
@@ -149,7 +115,7 @@ try:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
     else:
-        st.info("No active expenses. Start logging!")
+        st.info("No active expenses.")
 
 except Exception as e:
     st.error(f"Connection Error: {e}")
