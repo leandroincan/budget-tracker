@@ -39,7 +39,7 @@ st.markdown("""
         background-color: #28a745 !important;
     }
 
-    /* CLEAR BUTTON (The original Blue) */
+    /* CLEAR BUTTON (Original Blue) */
     div.stButton > button[kind="secondary"] {
         background-color: #007AFF !important;
     }
@@ -113,10 +113,12 @@ try:
     
     df = pd.DataFrame(rows)
 
+    # --- 5. DASHBOARD ---
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
-        st.metric("Total Shared", f"${total:,.2f}")
+        # Bolded the label here
+        st.metric("**Total Shared**", f"${total:,.2f}")
         
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
