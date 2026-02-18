@@ -15,9 +15,9 @@ st.markdown("""
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* Force 16px on EVERYTHING including the static table */
+    /* Force 14px on EVERYTHING including the static table */
     html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
-        font-size: 16px !important; 
+        font-size: 14px !important; 
     }
 
     /* Button Styling */
