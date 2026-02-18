@@ -8,16 +8,16 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# --- 2. UI STYLING (LIGHT MODE) ---
+# --- 2. UI STYLING ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
     <style>
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
-    /* Slight Font Increase (just one size up) */
-    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label {
-        font-size: 17px !important; 
+    /* Global Font Size set to 16px */
+    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button {
+        font-size: 16px !important; 
     }
 
     /* Base Button Styling */
@@ -29,23 +29,25 @@ st.markdown("""
         font-weight: bold;
         border: none;
         transition: 0.2s;
-        font-size: 17px !important;
     }
 
-    /* FORCE GREEN on the Add Expense button */
-    /* We target the button that is NOT the secondary type */
+    /* ADD EXPENSE BUTTON (Green) */
     div.stButton > button:not([kind="secondary"]) {
         background-color: #34C759 !important;
     }
-    div.stButton > button:not([kind="secondary"]):hover {
+    div.stButton > button:not([kind="secondary"]):active {
         background-color: #28a745 !important;
     }
 
-    /* FORCE BLUE on the Clear button */
+    /* CLEAR BUTTON (Light Blue to Dark Blue on press) */
     div.stButton > button[kind="secondary"] {
-        background-color: #0056b3 !important;
+        background-color: #60A5FA !important; /* Light Blue */
+    }
+    div.stButton > button[kind="secondary"]:active {
+        background-color: #1E40AF !important; /* Dark Blue when pressed */
     }
 
+    /* Input styling */
     div[data-baseweb="select"] > div, 
     div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
@@ -67,7 +69,7 @@ who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="S
 
 st.write("")
 
-# This button will be GREEN
+# This button is Green
 if st.button("Add Expense"):
     if category and who and cost and cost > 0:
         final_item_name = f"{category}: {details}" if details else category
@@ -142,7 +144,7 @@ try:
         )
 
         st.divider()
-        # This button will be BLUE
+        # This button is Light Blue (Dark Blue when clicked)
         if st.button("Clear & Start New Round", type="secondary"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
