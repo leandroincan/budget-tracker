@@ -132,7 +132,7 @@ try:
         df_disp = df.copy()
         df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         
-        # CHANGED: Swapped st.dataframe to st.table for font control
+        # Static table for font control
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
