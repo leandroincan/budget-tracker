@@ -20,7 +20,7 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
-    /* Button Styling */
+    /* Base Button Styling */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
@@ -31,14 +31,18 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* ADD EXPENSE BUTTON (Green) */
-    div.stButton > button:not([kind="secondary"]) {
+    /* --- THE FIX: ADD EXPENSE BUTTON (FORCE GREEN) --- */
+    /* We target the primary button specifically to beat Streamlit's default blue */
+    .stButton > button[kind="primary"], 
+    .stButton > button:first-child:not([kind="secondary"]) {
         background-color: #34C759 !important;
+        background: #34C759 !important;
     }
 
     /* CLEAR BUTTON (Original Blue) */
     div.stButton > button[kind="secondary"] {
         background-color: #007AFF !important;
+        background: #007AFF !important;
     }
 
     /* Input styling */
@@ -55,6 +59,9 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
+
+# Important: Add this right before your "Add Expense" button to tell Streamlit it's the primary action
+# if st.button("Add Expense", type="primary"):
 
 st.title("💰 Our Budget Tracker")
 
