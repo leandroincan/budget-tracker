@@ -22,13 +22,13 @@ st.markdown("""
     /* Metric label - match body */
     [data-testid="stMetricLabel"],
     [data-testid="stMetricLabel"] * {
-        font-size: 14px !important;
+        font-size: 18px !important;
     }
 
     /* Metric value - a little bigger */
     [data-testid="stMetricValue"],
     [data-testid="stMetricValue"] * {
-        font-size: 18px !important;
+        font-size: 16px !important;
     }
 
     /* All buttons blue by default */
