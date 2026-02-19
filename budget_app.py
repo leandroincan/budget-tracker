@@ -31,14 +31,24 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* Force green on primary button - multiple selectors for maximum specificity */
+    /* Blue button hover */
+    .stButton > button:hover {
+        background-color: #0056b3 !important;
+    }
+
+    /* Force green on primary button */
     button[data-testid="stBaseButton-primary"],
-    button[data-testid="stBaseButton-primary"]:hover,
     button[data-testid="stBaseButton-primary"]:focus,
     button[data-testid="stBaseButton-primary"]:active,
     .st-emotion-cache-16rr57l {
         background-color: #34C759 !important;
         border-color: #34C759 !important;
+    }
+
+    /* Green button hover */
+    button[data-testid="stBaseButton-primary"]:hover {
+        background-color: #28A745 !important;
+        border-color: #28A745 !important;
     }
 
     /* Input styling */
