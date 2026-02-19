@@ -19,6 +19,12 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
+    /* Fix metric label size */
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricLabel"] * {
+        font-size: 14px !important;
+    }
+
     /* All buttons blue by default */
     .stButton > button {
         width: 100%;
