@@ -19,7 +19,7 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
-    /* All buttons blue by default */
+    /* All buttons blue */
     .stButton > button {
         width: 100%;
         border-radius: 10px;
@@ -31,8 +31,15 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* Green button override */
-    .green-btn button {
+    /* Target Add Expense button by its test id key */
+    [data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button,
+    button[kind="primaryFormSubmit"],
+    [data-testid="stBaseButton-secondaryFormSubmit"] {
+        background-color: #007AFF !important;
+    }
+
+    /* Use nth-of-type to grab the first button = Add Expense */
+    section.main .stButton:first-of-type > button {
         background-color: #34C759 !important;
     }
 
@@ -60,11 +67,7 @@ who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="S
 
 st.write("")
 
-# ✅ This is the correct way to scope CSS to a single button in Streamlit
-with st.container():
-    st.markdown('<div class="green-btn">', unsafe_allow_html=True)
-    add_clicked = st.button("Add Expense", key="add_btn")
-    st.markdown('</div>', unsafe_allow_html=True)
+add_clicked = st.button("Add Expense", key="add_btn")
 
 if add_clicked:
     if category and who and cost and cost > 0:
