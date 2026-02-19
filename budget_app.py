@@ -54,6 +54,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+
     /* Input styling */
     div[data-baseweb="select"] > div, 
     div[data-baseweb="input"] > div {
