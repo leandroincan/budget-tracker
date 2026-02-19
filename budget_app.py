@@ -31,9 +31,14 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* Primary button (Add Expense) = green */
-    [data-testid="stBaseButton-primary"] {
+    /* Force green on primary button - multiple selectors for maximum specificity */
+    button[data-testid="stBaseButton-primary"],
+    button[data-testid="stBaseButton-primary"]:hover,
+    button[data-testid="stBaseButton-primary"]:focus,
+    button[data-testid="stBaseButton-primary"]:active,
+    .st-emotion-cache-16rr57l {
         background-color: #34C759 !important;
+        border-color: #34C759 !important;
     }
 
     /* Input styling */
@@ -60,7 +65,6 @@ who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="S
 
 st.write("")
 
-# ✅ type="primary" makes data-testid="stBaseButton-primary"
 add_clicked = st.button("Add Expense", type="primary", key="add_btn")
 
 if add_clicked:
@@ -128,7 +132,6 @@ try:
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
-        # No type= means secondary = blue
         if st.button("Clear & Start New Round", key="clear_btn"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
