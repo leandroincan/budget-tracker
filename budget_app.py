@@ -31,8 +31,8 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* Only the Add Expense button is green */
-    div.green-btn > div > button {
+    /* Green button override */
+    .green-btn button {
         background-color: #34C759 !important;
     }
 
@@ -60,16 +60,16 @@ who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="S
 
 st.write("")
 
-# Wrap Add Expense in a green-btn div
-st.markdown('<div class="green-btn">', unsafe_allow_html=True)
-add_clicked = st.button("Add Expense")
-st.markdown('</div>', unsafe_allow_html=True)
+# ✅ This is the correct way to scope CSS to a single button in Streamlit
+with st.container():
+    st.markdown('<div class="green-btn">', unsafe_allow_html=True)
+    add_clicked = st.button("Add Expense", key="add_btn")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if add_clicked:
     if category and who and cost and cost > 0:
         final_item_name = f"{category}: {details}" if details else category
         today = datetime.now().strftime("%Y-%m-%d")
-        
         notion.pages.create(
             parent={"database_id": DATABASE_ID},
             properties={
@@ -128,13 +128,13 @@ try:
         st.subheader("Current Expenses")
         df_disp = df.copy()
         df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
-        
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
-        if st.button("Clear & Start New Round"):
+        if st.button("Clear & Start New Round", key="clear_btn"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
+
 except Exception as e:
     st.error(f"Error: {e}")
