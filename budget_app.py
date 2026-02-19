@@ -8,35 +8,51 @@ NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
 DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
-# --- 2. UI STYLING ---
+# --- 2. UI STYLING (LIGHT MODE) ---
 st.set_page_config(page_title="Budget Tracker", layout="centered")
 st.markdown("""
     <style>
+    /* Clean Hide */
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
+    
+    /* White background for the app */
     .main { background-color: #ffffff; }
 
-    /* Force 14px on EVERYTHING */
-    html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
-        font-size: 14px !important; 
-    }
-
-    /* 1. Set EVERY button on the page to GREEN by default */
-    .stButton > button {
+    /* GREEN Button with Hover Fix */
+    .stButton>button {
         width: 100%;
-        border-radius: 10px;
-        height: 3.2em;
-        background-color: #34C759 !important; /* THE GREEN */
+        border-radius: 12px;
+        height: 3.5em;
+        background-color: #34C759; /* iOS Success Green */
         color: white !important;
         font-weight: bold;
-        border: none !important;
-        transition: 0.2s;
+        border: none;
+        transition: 0.2s ease;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05); /* Soft shadow for 'app' feel */
+    }
+    
+    /* Darker green on hover/tap */
+    .stButton>button:hover {
+        background-color: #28a745 !important;
+        color: white !important;
+        transform: translateY(-1px); /* Slight lift effect */
     }
 
-    /* 2. SPECIFICALLY set the 'secondary' button back to BLUE */
-    /* This overrides the green rule above ONLY for the Clear button */
-    .stButton > button[kind="secondary"] {
-        background-color: #007AFF !important; /* THE BLUE */
+    /* Active/Pressed State */
+    .stButton>button:active {
+        background-color: #1e7e34 !important;
+        transform: translateY(0px);
     }
+
+    /* Input styling for Light Mode */
+    div[data-baseweb="select"] > div, 
+    div[data-baseweb="input"] > div {
+        background-color: #f8f9fb !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 10px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     /* Input styling */
     div[data-baseweb="select"] > div, 
