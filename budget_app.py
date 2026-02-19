@@ -19,21 +19,21 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
-    /* All buttons green by default */
+    /* All buttons blue by default */
     .stButton > button {
         width: 100%;
         border-radius: 10px;
         height: 3.2em;
-        background-color: #34C759 !important;
+        background-color: #007AFF !important;
         color: white !important;
         font-weight: bold;
         border: none !important;
         transition: 0.2s;
     }
 
-    /* Clear button (secondary) overridden to blue */
-    div[data-testid="stButton"]:has(button[kind="secondary"]) > button {
-        background-color: #007AFF !important;
+    /* Only the Add Expense button is green */
+    div.green-btn > div > button {
+        background-color: #34C759 !important;
     }
 
     /* Input styling */
@@ -60,7 +60,12 @@ who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="S
 
 st.write("")
 
-if st.button("Add Expense"):
+# Wrap Add Expense in a green-btn div
+st.markdown('<div class="green-btn">', unsafe_allow_html=True)
+add_clicked = st.button("Add Expense")
+st.markdown('</div>', unsafe_allow_html=True)
+
+if add_clicked:
     if category and who and cost and cost > 0:
         final_item_name = f"{category}: {details}" if details else category
         today = datetime.now().strftime("%Y-%m-%d")
@@ -127,7 +132,7 @@ try:
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
-        if st.button("Clear & Start New Round", type="secondary"):
+        if st.button("Clear & Start New Round"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
