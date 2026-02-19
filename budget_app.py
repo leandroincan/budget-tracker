@@ -136,7 +136,7 @@ try:
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
-        st.metric("**Total Shared**", f"${total:,.2f}")
+        st.metric("**Total**", f"${total:,.2f}")
         
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
