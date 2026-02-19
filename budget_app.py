@@ -19,10 +19,16 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
-    /* Fix metric label size */
+    /* Metric label - match body */
     [data-testid="stMetricLabel"],
     [data-testid="stMetricLabel"] * {
         font-size: 14px !important;
+    }
+
+    /* Metric value - a little bigger */
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricValue"] * {
+        font-size: 18px !important;
     }
 
     /* All buttons blue by default */
@@ -130,7 +136,7 @@ try:
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
-        st.metric("**Total**", f"${total:,.2f}")
+        st.metric("**Total Shared**", f"${total:,.2f}")
         
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
