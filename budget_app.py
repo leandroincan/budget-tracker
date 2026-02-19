@@ -19,7 +19,7 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
-    /* All buttons blue */
+    /* All buttons blue by default */
     .stButton > button {
         width: 100%;
         border-radius: 10px;
@@ -31,15 +31,8 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* Target Add Expense button by its test id key */
-    [data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button,
-    button[kind="primaryFormSubmit"],
-    [data-testid="stBaseButton-secondaryFormSubmit"] {
-        background-color: #007AFF !important;
-    }
-
-    /* Use nth-of-type to grab the first button = Add Expense */
-    section.main .stButton:first-of-type > button {
+    /* Primary button (Add Expense) = green */
+    [data-testid="stBaseButton-primary"] {
         background-color: #34C759 !important;
     }
 
@@ -67,7 +60,8 @@ who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="S
 
 st.write("")
 
-add_clicked = st.button("Add Expense", key="add_btn")
+# ✅ type="primary" makes data-testid="stBaseButton-primary"
+add_clicked = st.button("Add Expense", type="primary", key="add_btn")
 
 if add_clicked:
     if category and who and cost and cost > 0:
@@ -134,6 +128,7 @@ try:
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
+        # No type= means secondary = blue
         if st.button("Clear & Start New Round", key="clear_btn"):
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
