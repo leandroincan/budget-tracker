@@ -15,6 +15,8 @@ st.set_page_config(page_title="Wolfie's Fund", page_icon="🐾", layout="centere
 st.markdown("""
     <style>
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
+    [data-testid="stSidebar"] {display: none !important;}
+    [data-testid="collapsedControl"] {display: none !important;}
     .main { background-color: #ffffff; }
 
     html, body, [class*="st-"], .stSelectbox, .stTextInput, .stNumberInput, label, button, td, th, p {
@@ -58,6 +60,20 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
+    /* Small gray nav button */
+    div[data-testid="stButton"].nav-btn > button {
+        background-color: #e0e0e0 !important;
+        color: #333333 !important;
+        height: 2em !important;
+        font-size: 12px !important;
+        font-weight: normal !important;
+        border-radius: 8px !important;
+    }
+
+    div[data-testid="stButton"].nav-btn > button:hover {
+        background-color: #c8c8c8 !important;
+    }
+
     div[data-baseweb="select"] > div, 
     div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
@@ -72,13 +88,10 @@ st.markdown("""
 st.title("🐾 Wolfie's Surgery Fund")
 
 # --- NAVIGATION ---
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("💰 Budget Tracker", key="nav_budget"):
-        st.switch_page("budget_app.py")
-with col2:
-    if st.button("🐾 Wolfie's Fund", key="nav_wolfie"):
-        st.switch_page("pages/1_Wolfie.py")
+st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
+if st.button("💰 Budget Tracker", key="nav_budget"):
+    st.switch_page("budget_app.py")
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.write("")
 
