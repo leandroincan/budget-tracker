@@ -62,19 +62,29 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
-   
- /* Gray nav button - target by inner button class */
-.st-emotion-cache-jc12jo {
-    background-color: #e0e0e0 !important;
-    color: #333333 !important;
-    font-weight: normal !important;
-    height: 2em !important;
-    font-size: 12px !important;
-}
+    /* Gray nav button */
+    .st-emotion-cache-jc12jo {
+        background-color: #e0e0e0 !important;
+        color: #333333 !important;
+        font-weight: normal !important;
+        height: 2em !important;
+        font-size: 12px !important;
+    }
 
-.st-emotion-cache-jc12jo:hover {
-    background-color: #c8c8c8 !important;
-}
+    .st-emotion-cache-jc12jo:hover {
+        background-color: #c8c8c8 !important;
+    }
+
+    div[data-baseweb="select"] > div, 
+    div[data-baseweb="input"] > div {
+        background-color: #f8f9fb !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 8px !important;
+    }
+
+    table { width: 100%; }
+    </style>
+    """, unsafe_allow_html=True)
 
 st.title("🐾 Wolfie's Surgery Fund")
 
