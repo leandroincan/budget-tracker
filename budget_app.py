@@ -12,13 +12,6 @@ notion = Client(auth=NOTION_TOKEN)
 st.set_page_config(page_title="Budget Tracker", page_icon="💰", layout="centered")
 st.markdown("""
     <style>
-    [data-testid="stSidebar"] {
-    display: block !important;
-}
-
-[data-testid="collapsedControl"] {
-    display: block !important;
-}
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
@@ -75,7 +68,18 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("💰 Budget Tracker")
+st.title("💰 Our Budget Tracker")
+
+# --- NAVIGATION ---
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("💰 Budget Tracker", key="nav_budget"):
+        st.switch_page("budget_app.py")
+with col2:
+    if st.button("🐾 Wolfie's Fund", key="nav_wolfie"):
+        st.switch_page("pages/1_Wolfie.py")
+
+st.write("")
 
 # --- 3. SESSION STATE INIT ---
 if "form_key" not in st.session_state:
@@ -84,7 +88,6 @@ if "form_key" not in st.session_state:
 # --- 4. INPUT SECTION ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
-# Using form_key in the widget keys forces a fresh render when incremented
 fk = st.session_state.form_key
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select store", key=f"category_{fk}")
 details = st.text_input("Details (Optional)", placeholder="e.g. Groceries", key=f"details_{fk}")
@@ -110,7 +113,6 @@ if add_clicked:
             }
         )
         st.success("Added!")
-        # Increment key to force all fields to reset
         st.session_state.form_key += 1
         st.rerun()
     else:
@@ -158,8 +160,8 @@ try:
 
         st.subheader("Current Expenses")
         df_disp = df.copy()
-        df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         df_disp.index = range(1, len(df_disp) + 1)
+        df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
