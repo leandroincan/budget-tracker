@@ -9,19 +9,6 @@ DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
 # --- 2. UI STYLING ---
-/* Gray nav button */
-.st-emotion-cache-jc12jo {
-    background-color: #e0e0e0 !important;
-    color: #333333 !important;
-    font-weight: normal !important;
-    height: 2em !important;
-    font-size: 12px !important;
-}
-
-.st-emotion-cache-jc12jo:hover {
-    background-color: #c8c8c8 !important;
-}
-    
 st.set_page_config(page_title="Budget Tracker", page_icon="💰", layout="centered")
 st.markdown("""
     <style>
@@ -44,6 +31,7 @@ st.markdown("""
         font-size: 16px !important;
     }
 
+    /* All buttons blue by default */
     .stButton > button {
         width: 100%;
         border-radius: 10px;
@@ -59,6 +47,7 @@ st.markdown("""
         background-color: #0056b3 !important;
     }
 
+    /* Green primary button */
     button[data-testid="stBaseButton-primary"],
     button[data-testid="stBaseButton-primary"]:focus,
     button[data-testid="stBaseButton-primary"]:active,
@@ -72,17 +61,16 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
-    /* Small gray nav button */
-    div[data-testid="stButton"].nav-btn > button {
+    /* Gray nav button */
+    .st-emotion-cache-jc12jo {
         background-color: #e0e0e0 !important;
         color: #333333 !important;
+        font-weight: normal !important;
         height: 2em !important;
         font-size: 12px !important;
-        font-weight: normal !important;
-        border-radius: 8px !important;
     }
 
-    div[data-testid="stButton"].nav-btn > button:hover {
+    .st-emotion-cache-jc12jo:hover {
         background-color: #c8c8c8 !important;
     }
 
@@ -100,10 +88,8 @@ st.markdown("""
 st.title("💰 Our Budget Tracker")
 
 # --- NAVIGATION ---
-st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
 if st.button("🐾 Wolfie's Fund", key="nav_wolfie"):
     st.switch_page("pages/1_Wolfie.py")
-st.markdown('</div>', unsafe_allow_html=True)
 
 st.write("")
 
