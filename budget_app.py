@@ -9,6 +9,19 @@ DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
 # --- 2. UI STYLING ---
+/* Gray nav button */
+.st-emotion-cache-jc12jo {
+    background-color: #e0e0e0 !important;
+    color: #333333 !important;
+    font-weight: normal !important;
+    height: 2em !important;
+    font-size: 12px !important;
+}
+
+.st-emotion-cache-jc12jo:hover {
+    background-color: #c8c8c8 !important;
+}
+    
 st.set_page_config(page_title="Budget Tracker", page_icon="💰", layout="centered")
 st.markdown("""
     <style>
