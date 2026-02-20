@@ -12,6 +12,13 @@ notion = Client(auth=NOTION_TOKEN)
 st.set_page_config(page_title="Budget Tracker", page_icon="💰", layout="centered")
 st.markdown("""
     <style>
+    [data-testid="stSidebar"] {
+    display: block !important;
+}
+
+[data-testid="collapsedControl"] {
+    display: block !important;
+}
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
