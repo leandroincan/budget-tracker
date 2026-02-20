@@ -152,6 +152,7 @@ try:
         st.subheader("Current Expenses")
         df_disp = df.copy()
         df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
+        df_disp.index = range(1, len(df_disp) + 1)
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
 
         st.divider()
