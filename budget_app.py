@@ -62,7 +62,9 @@ st.markdown("""
     }
 
     /* Gray nav button */
-    .st-emotion-cache-jc12jo {
+    .st-emotion-cache-8atqhb > button,
+    .st-emotion-cache-8atqhb > button:focus,
+    .st-emotion-cache-8atqhb > button:active {
         background-color: #e0e0e0 !important;
         color: #333333 !important;
         font-weight: normal !important;
@@ -70,7 +72,7 @@ st.markdown("""
         font-size: 12px !important;
     }
 
-    .st-emotion-cache-jc12jo:hover {
+    .st-emotion-cache-8atqhb > button:hover {
         background-color: #c8c8c8 !important;
     }
 
