@@ -77,13 +77,23 @@ st.markdown("""
 
 st.title("💰 Our Budget Tracker")
 
-# --- 3. INPUT SECTION ---
+# --- 3. SESSION STATE INIT ---
+if "category" not in st.session_state:
+    st.session_state.category = None
+if "details" not in st.session_state:
+    st.session_state.details = ""
+if "cost" not in st.session_state:
+    st.session_state.cost = None
+if "who" not in st.session_state:
+    st.session_state.who = None
+
+# --- 4. INPUT SECTION ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
-category = st.selectbox("Category", options=categories, index=None, placeholder="Select store")
-details = st.text_input("Details (Optional)", placeholder="e.g. Groceries")
-cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00")
-who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person")
+category = st.selectbox("Category", options=categories, index=None, placeholder="Select store", key="category")
+details = st.text_input("Details (Optional)", placeholder="e.g. Groceries", key="details")
+cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00", key="cost")
+who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person", key="who")
 
 st.write("")
 
@@ -104,11 +114,16 @@ if add_clicked:
             }
         )
         st.success("Added!")
+        # Clear all fields
+        st.session_state.category = None
+        st.session_state.details = ""
+        st.session_state.cost = None
+        st.session_state.who = None
         st.rerun()
     else:
         st.error("Please fill out Category, Amount, and Who paid.")
 
-# --- 4. DATA FETCHING ---
+# --- 5. DATA FETCHING ---
 try:
     response = notion.databases.query(database_id=DATABASE_ID)
     results = response.get("results")
@@ -132,7 +147,7 @@ try:
     
     df = pd.DataFrame(rows)
 
-    # --- 5. DASHBOARD ---
+    # --- 6. DASHBOARD ---
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
