@@ -13,6 +13,13 @@ GOAL = 4500.00
 # --- 2. UI STYLING ---
 st.markdown("""
     <style>
+    [data-testid="stSidebar"] {
+    display: block !important;
+}
+
+[data-testid="collapsedControl"] {
+    display: block !important;
+}
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
