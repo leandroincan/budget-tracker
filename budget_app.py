@@ -9,7 +9,7 @@ DATABASE_ID = st.secrets["DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
 # --- 2. UI STYLING ---
-st.set_page_config(page_title="Budget Tracker", layout="centered")
+st.set_page_config(page_title="Budget Tracker", page_icon="💰", layout="centered")
 st.markdown("""
     <style>
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
