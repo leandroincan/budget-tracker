@@ -68,7 +68,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("💰 Our Budget Tracker")
+st.title("💰 Budget Tracker")
 
 # --- 3. SESSION STATE INIT ---
 if "form_key" not in st.session_state:
