@@ -11,15 +11,9 @@ notion = Client(auth=NOTION_TOKEN)
 GOAL = 4500.00
 
 # --- 2. UI STYLING ---
+st.set_page_config(page_title="Wolfie's Fund", page_icon="🐾", layout="centered")
 st.markdown("""
     <style>
-    [data-testid="stSidebar"] {
-    display: block !important;
-}
-
-[data-testid="collapsedControl"] {
-    display: block !important;
-}
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     .main { background-color: #ffffff; }
 
@@ -76,6 +70,17 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🐾 Wolfie's Surgery Fund")
+
+# --- NAVIGATION ---
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("💰 Budget Tracker", key="nav_budget"):
+        st.switch_page("budget_app.py")
+with col2:
+    if st.button("🐾 Wolfie's Fund", key="nav_wolfie"):
+        st.switch_page("pages/1_Wolfie.py")
+
+st.write("")
 
 # --- 3. SESSION STATE ---
 if "form_key" not in st.session_state:
