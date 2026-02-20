@@ -19,19 +19,16 @@ st.markdown("""
         font-size: 14px !important; 
     }
 
-    /* Metric label - match body */
     [data-testid="stMetricLabel"],
     [data-testid="stMetricLabel"] * {
         font-size: 18px !important;
     }
 
-    /* Metric value - a little bigger */
     [data-testid="stMetricValue"],
     [data-testid="stMetricValue"] * {
         font-size: 16px !important;
     }
 
-    /* All buttons blue by default */
     .stButton > button {
         width: 100%;
         border-radius: 10px;
@@ -43,12 +40,10 @@ st.markdown("""
         transition: 0.2s;
     }
 
-    /* Blue button hover */
     .stButton > button:hover {
         background-color: #0056b3 !important;
     }
 
-    /* Force green on primary button */
     button[data-testid="stBaseButton-primary"],
     button[data-testid="stBaseButton-primary"]:focus,
     button[data-testid="stBaseButton-primary"]:active,
@@ -57,13 +52,11 @@ st.markdown("""
         border-color: #34C759 !important;
     }
 
-    /* Green button hover */
     button[data-testid="stBaseButton-primary"]:hover {
         background-color: #28A745 !important;
         border-color: #28A745 !important;
     }
 
-    /* Input styling */
     div[data-baseweb="select"] > div, 
     div[data-baseweb="input"] > div {
         background-color: #f8f9fb !important;
@@ -78,22 +71,18 @@ st.markdown("""
 st.title("💰 Our Budget Tracker")
 
 # --- 3. SESSION STATE INIT ---
-if "category" not in st.session_state:
-    st.session_state.category = None
-if "details" not in st.session_state:
-    st.session_state.details = ""
-if "cost" not in st.session_state:
-    st.session_state.cost = None
-if "who" not in st.session_state:
-    st.session_state.who = None
+if "form_key" not in st.session_state:
+    st.session_state.form_key = 0
 
 # --- 4. INPUT SECTION ---
 categories = ["Superstore", "Safeway", "Dollarama", "Walmart", "Others"]
 
-category = st.selectbox("Category", options=categories, index=None, placeholder="Select store", key="category")
-details = st.text_input("Details (Optional)", placeholder="e.g. Groceries", key="details")
-cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00", key="cost")
-who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person", key="who")
+# Using form_key in the widget keys forces a fresh render when incremented
+fk = st.session_state.form_key
+category = st.selectbox("Category", options=categories, index=None, placeholder="Select store", key=f"category_{fk}")
+details = st.text_input("Details (Optional)", placeholder="e.g. Groceries", key=f"details_{fk}")
+cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00", key=f"cost_{fk}")
+who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person", key=f"who_{fk}")
 
 st.write("")
 
@@ -114,11 +103,8 @@ if add_clicked:
             }
         )
         st.success("Added!")
-        # Clear all fields
-        st.session_state.category = None
-        st.session_state.details = ""
-        st.session_state.cost = None
-        st.session_state.who = None
+        # Increment key to force all fields to reset
+        st.session_state.form_key += 1
         st.rerun()
     else:
         st.error("Please fill out Category, Amount, and Who paid.")
