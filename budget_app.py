@@ -4,8 +4,8 @@ import pandas as pd
 from datetime import datetime
 
 # --- 1. SETUP & CONFIG ---
-NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
-DATABASE_ID = st.secrets["DATABASE_ID"]
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN") or st.secrets.get("NOTION_TOKEN")
+DATABASE_ID = os.environ.get("DATABASE_ID") or st.secrets.get("DATABASE_ID")
 notion = Client(auth=NOTION_TOKEN)
 
 # --- 2. UI STYLING ---
