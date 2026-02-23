@@ -63,6 +63,11 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
+    /* Green progress bar */
+    [data-testid="stProgressBar"] > div > div {
+    background-color: #34C759 !important;
+    }
+    
     /* Gray nav button */
     .st-emotion-cache-jc12jo {
         background-color: #e0e0e0 !important;
