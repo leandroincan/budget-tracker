@@ -27,6 +27,7 @@ st.markdown("""
     [data-testid="stMetricLabel"],
     [data-testid="stMetricLabel"] * {
         font-size: 18px !important;
+        font-weight: bold !important;
     }
 
     [data-testid="stMetricValue"],
