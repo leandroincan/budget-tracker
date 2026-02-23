@@ -4,8 +4,8 @@ import pandas as pd
 from datetime import datetime
 
 # --- 1. SETUP & CONFIG ---
-NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
-DOG_DATABASE_ID = st.secrets["DOG_DATABASE_ID"]
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN") or st.secrets.get("NOTION_TOKEN")
+DOG_DATABASE_ID = os.environ.get("DOG_DATABASE_ID") or st.secrets.get("DOG_DATABASE_ID")
 notion = Client(auth=NOTION_TOKEN)
 
 GOAL = 4500.00
