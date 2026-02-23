@@ -12,10 +12,10 @@ notion = Client(auth=NOTION_TOKEN)
 # --- 2. UI STYLING ---
 st.set_page_config(page_title="Budget Tracker", page_icon="💰", layout="centered")
 st.markdown("""
+    <style>
     <head>
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     </head>
-    <style>
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     [data-testid="stSidebar"] {display: none !important;}
     [data-testid="collapsedControl"] {display: none !important;}
