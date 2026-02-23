@@ -12,8 +12,6 @@ notion = Client(auth=NOTION_TOKEN)
 # --- 2. UI STYLING ---
 st.set_page_config(page_title="Budget Tracker", page_icon="💰", layout="centered")
 st.markdown("""
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <style>
     [data-testid="stToolbar"], footer, header {visibility: hidden !important;}
     [data-testid="stSidebar"] {display: none !important;}
@@ -64,17 +62,18 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
-    /* Gray nav button */
+    /* White nav button */
     .st-emotion-cache-jc12jo {
-        background-color: #e0e0e0 !important;
+        background-color: #ffffff !important;
         color: #333333 !important;
         font-weight: normal !important;
         height: 2em !important;
         font-size: 12px !important;
+        border: 1px solid #e0e0e0 !important;
     }
 
     .st-emotion-cache-jc12jo:hover {
-        background-color: #c8c8c8 !important;
+        background-color: #f0f0f0 !important;
     }
 
     div[data-baseweb="select"] > div, 
