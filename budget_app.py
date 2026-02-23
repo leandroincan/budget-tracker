@@ -23,7 +23,7 @@ st.markdown("""
 
     [data-testid="stMetricLabel"],
     [data-testid="stMetricLabel"] * {
-        font-size: 16px !important;
+        font-size: 18px !important;
     }
 
     [data-testid="stMetricValue"],
