@@ -65,22 +65,23 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
-    /* Green progress bar */
-    .st-dc {
-    background-color: #34C759 !important;
-    }    
-    
-    /* Gray nav button */
+    /* White nav button */
     .st-emotion-cache-jc12jo {
-        background-color: #e0e0e0 !important;
+        background-color: #ffffff !important;
         color: #333333 !important;
         font-weight: normal !important;
         height: 2em !important;
         font-size: 12px !important;
+        border: 1px solid #e0e0e0 !important;
     }
 
     .st-emotion-cache-jc12jo:hover {
-        background-color: #c8c8c8 !important;
+        background-color: #f0f0f0 !important;
+    }
+
+    /* Green progress bar */
+    .st-dc {
+        background-color: #34C759 !important;
     }
 
     div[data-baseweb="select"] > div, 
