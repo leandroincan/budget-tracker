@@ -85,7 +85,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("💰 Our Budget Tracker")
+st.title("💰 Budget Tracker")
 
 # --- NAVIGATION ---
 if st.button("🐾 Wolfie's Fund", key="nav_wolfie"):
