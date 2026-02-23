@@ -9,6 +9,7 @@ DOG_DATABASE_ID = st.secrets["DOG_DATABASE_ID"]
 notion = Client(auth=NOTION_TOKEN)
 
 GOAL = 4500.00
+INDIVIDUAL_GOAL = GOAL / 2  # $2,250 each
 
 # --- 2. UI STYLING ---
 st.set_page_config(page_title="Wolfie's Fund", page_icon="🐾", layout="centered")
@@ -154,22 +155,29 @@ try:
 
         total_saved = df["Amount"].sum()
         remaining = max(0.0, GOAL - total_saved)
-        progress = min(total_saved / GOAL, 1.0)
 
         col1, col2, col3 = st.columns(3)
         col1.metric("💰 Saved", f"${total_saved:,.2f}")
         col2.metric("🎯 Goal", f"${GOAL:,.2f}")
         col3.metric("📋 Remaining", f"${remaining:,.2f}")
 
-        st.progress(progress)
-        st.caption(f"{progress * 100:.1f}% of goal reached")
+        st.divider()
 
         l_saved = df[df["Who"] == "Leandro"]["Amount"].sum()
         j_saved = df[df["Who"] == "Jonas"]["Amount"].sum()
 
-        col1, col2 = st.columns(2)
-        col1.write(f"🐾 **Leandro saved:** `${l_saved:,.2f}`")
-        col2.write(f"🐾 **Jonas saved:** `${j_saved:,.2f}`")
+        l_progress = min(l_saved / INDIVIDUAL_GOAL, 1.0)
+        j_progress = min(j_saved / INDIVIDUAL_GOAL, 1.0)
+
+        st.write("**🐾 Leandro**")
+        st.progress(l_progress)
+        st.caption(f"${l_saved:,.2f} of ${INDIVIDUAL_GOAL:,.2f} — {l_progress * 100:.1f}% of goal reached")
+
+        st.write("**🐾 Jonas**")
+        st.progress(j_progress)
+        st.caption(f"${j_saved:,.2f} of ${INDIVIDUAL_GOAL:,.2f} — {j_progress * 100:.1f}% of goal reached")
+
+        st.divider()
 
         st.subheader("Contributions")
         df_disp = df.copy()
