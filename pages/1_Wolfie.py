@@ -64,9 +64,9 @@ st.markdown("""
     }
 
     /* Green progress bar */
-    [data-testid="stProgressBar"] > div > div {
+    .st-dc {
     background-color: #34C759 !important;
-    }
+    }    
     
     /* Gray nav button */
     .st-emotion-cache-jc12jo {
