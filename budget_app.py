@@ -63,7 +63,9 @@ st.markdown("""
     }
 
     /* White nav button */
-    .st-emotion-cache-jc12jo {
+    button.st-emotion-cache-jc12jo,
+    button.st-emotion-cache-jc12jo:focus,
+    button.st-emotion-cache-jc12jo:active {
         background-color: #ffffff !important;
         color: #333333 !important;
         font-weight: normal !important;
@@ -72,7 +74,7 @@ st.markdown("""
         border: 1px solid #e0e0e0 !important;
     }
 
-    .st-emotion-cache-jc12jo:hover {
+    button.st-emotion-cache-jc12jo:hover {
         background-color: #f0f0f0 !important;
     }
 
