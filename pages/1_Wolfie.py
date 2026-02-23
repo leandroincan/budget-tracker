@@ -9,8 +9,8 @@ NOTION_TOKEN = os.environ.get("NOTION_TOKEN") or st.secrets.get("NOTION_TOKEN")
 DOG_DATABASE_ID = os.environ.get("DOG_DATABASE_ID") or st.secrets.get("DOG_DATABASE_ID")
 notion = Client(auth=NOTION_TOKEN)
 
-GOAL = 4500.00
-INDIVIDUAL_GOAL = GOAL / 2  # $2,250 each
+GOAL = 4951.92
+INDIVIDUAL_GOAL = GOAL / 2  # $2,475 each
 
 # --- 2. UI STYLING ---
 st.set_page_config(page_title="Wolfie's Fund", page_icon="🐾", layout="centered")
