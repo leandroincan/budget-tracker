@@ -171,11 +171,11 @@ try:
 
         st.write("**🐾 Leandro**")
         st.progress(l_progress)
-        st.markdown(f"\${l_saved:,.2f} of \${INDIVIDUAL_GOAL:,.2f} — {l_progress * 100:.1f}% of goal reached")
+        st.caption(f"\${l_saved:,.2f} of \${INDIVIDUAL_GOAL:,.2f} — {l_progress * 100:.1f}% of goal reached")
 
         st.write("**🐾 Jonas**")
         st.progress(j_progress)
-        st.markdown(f"\${j_saved:,.2f} of \${INDIVIDUAL_GOAL:,.2f} — {j_progress * 100:.1f}% of goal reached")
+        st.caption(f"\${j_saved:,.2f} of \${INDIVIDUAL_GOAL:,.2f} — {j_progress * 100:.1f}% of goal reached")
 
         st.divider()
 
