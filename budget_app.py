@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from notion_client import Client
 import pandas as pd
