@@ -182,9 +182,22 @@ try:
 
         st.divider()
         if st.button("Clear & Start New Round", key="clear_btn"):
-            for page_id in df["id"]:
-                notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
-            st.rerun()
+    # Create separator row in Notion
+        today = datetime.now().strftime("%Y-%m-%d")
+        notion.pages.create(
+            parent={"database_id": DATABASE_ID},
+            properties={
+                "Item": {"title": [{"text": {"content": f"--- New Round Started: {today} ---"}}]},
+                "Cost": {"number": 0.0},
+                "Who": {"select": {"name": "Leandro"}},
+                "Date": {"date": {"start": today}},
+                "Archived": {"checkbox": True}
+        }
+    )
+    # Archive all current expenses
+        for page_id in df["id"]:
+            notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
+        st.rerun()
 
 except Exception as e:
     st.error(f"Error: {e}")
