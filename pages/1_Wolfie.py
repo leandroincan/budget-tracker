@@ -100,8 +100,13 @@ button.st-emotion-cache-jc12jo:hover {
 st.title("🐾 Wolfie's Surgery Fund")
 
 # --- NAVIGATION ---
-if st.button("💰 Budget Tracker", key="nav_budget"):
-    st.switch_page("budget_app.py")
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("💰 Budget Tracker", key="nav_budget"):
+        st.switch_page("budget_app.py")
+with col2:
+    if st.button("🧾 Tax Receipts", key="nav_tax"):
+        st.switch_page("pages/2_Tax_Receipts.py")
 
 st.write("")
 
