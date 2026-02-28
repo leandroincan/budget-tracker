@@ -62,20 +62,30 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
-    /* White nav button */
-    button.st-emotion-cache-jc12jo,
-    button.st-emotion-cache-jc12jo:focus,
-    button.st-emotion-cache-jc12jo:active {
-        background-color: #ffffff !important;
+    /* HTML nav buttons */
+    .nav-button {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.2s;
         color: #333333 !important;
-        font-weight: normal !important;
-        height: 2em !important;
-        font-size: 12px !important;
-        border: 1px solid #e0e0e0 !important;
+        text-decoration: none !important;
     }
 
-    button.st-emotion-cache-jc12jo:hover {
-        background-color: #f0f0f0 !important;
+    .nav-button:hover {
+        background: #f0f0f0 !important;
+    }
+
+    .nav-button:active {
+        background: #e0e0e0 !important;
+    }
+
+    a .nav-button, a:visited .nav-button, a:hover .nav-button {
+        color: #333333 !important;
+        text-decoration: none !important;
     }
 
     div[data-baseweb="select"] > div, 
@@ -97,7 +107,7 @@ st.markdown(
     '<a href="/Wolfie" target="_self" style="text-decoration:none;">'
     '<button class="nav-button">🐾 Wolfie\'s Fund</button>'
     '</a>'
-    '<a href="/2_Tax_Receipts" target="_self" style="text-decoration:none;">'
+    '<a href="/Tax_Receipts" target="_self" style="text-decoration:none;">'
     '<button class="nav-button">🧾 Tax Receipts</button>'
     '</a>'
     '</div>',
