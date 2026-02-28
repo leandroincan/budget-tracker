@@ -1,3 +1,4 @@
 notion-client==2.2.1
 streamlit
 pandas
+cloudinary
