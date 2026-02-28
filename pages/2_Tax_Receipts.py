@@ -220,7 +220,7 @@ try:
             col1.write(f"🧾 **Leandro:** `${l_total:,.2f}`")
             col2.write(f"🧾 **Jonas:** `${j_total:,.2f}`")
 
-            st.subheader("All Receipts")
+            st.subheader("Receipts")
             for i, row in df.iterrows():
                 col1, col2 = st.columns([4, 1])
                 with col1:
