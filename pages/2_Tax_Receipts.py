@@ -153,7 +153,7 @@ if add_clicked:
                 "Receipt": {"url": photo_url_string if photo_url_string else None},
             }
         )
-        st.success(f"Receipt added!" + (f" 📸 {len(photo_urls)} photo(s) uploaded!" if photo_urls else ""))
+        st.success("Receipt added!" + (f" 📸 {len(photo_urls)} photo(s) uploaded!" if photo_urls else ""))
         st.session_state.form_key += 1
         st.rerun()
     else:
@@ -218,7 +218,7 @@ try:
                 if row["Receipt URL"]:
                     urls = row["Receipt URL"].split(" | ")
                     for idx, url in enumerate(urls):
-                        col2.markdown(f"📸 [View]({url})", unsafe_allow_html=True
+                        col2.markdown(f"📸 [View]({url})", unsafe_allow_html=True)
                 else:
                     col2.write("No photo")
         else:
