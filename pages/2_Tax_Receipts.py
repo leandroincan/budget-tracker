@@ -102,10 +102,14 @@ st.title("🧾 Tax Receipts")
 st.markdown(
     '<div style="display:flex; gap:8px; margin-bottom:8px;">'
     '<a href="/" target="_self" style="text-decoration:none;">'
-    '<button style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">💰 Budget Tracker</button>'
+    '<button style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;" '
+    'onmouseover="this.style.background=\'#f0f0f0\'" onmouseout="this.style.background=\'#fff\'" '
+    'onmousedown="this.style.background=\'#e0e0e0\'" onmouseup="this.style.background=\'#f0f0f0\'">💰 Budget Tracker</button>'
     '</a>'
     '<a href="/1_Wolfie" target="_self" style="text-decoration:none;">'
-    '<button style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">🐾 Wolfie\'s Fund</button>'
+    '<button style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;" '
+    'onmouseover="this.style.background=\'#f0f0f0\'" onmouseout="this.style.background=\'#fff\'" '
+    'onmousedown="this.style.background=\'#e0e0e0\'" onmouseup="this.style.background=\'#f0f0f0\'">🐾 Wolfie\'s Fund</button>'
     '</a>'
     '</div>',
     unsafe_allow_html=True
