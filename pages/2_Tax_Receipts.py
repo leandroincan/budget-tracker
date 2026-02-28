@@ -218,7 +218,7 @@ try:
                 if row["Receipt URL"]:
                     urls = row["Receipt URL"].split(" | ")
                     for idx, url in enumerate(urls):
-                        col2.markdown(f"[📸 Photo {idx+1}]({url})", unsafe_allow_html=True)
+                        col2.markdown(f"📸 [View]({url})", unsafe_allow_html=True
                 else:
                     col2.write("No photo")
         else:
