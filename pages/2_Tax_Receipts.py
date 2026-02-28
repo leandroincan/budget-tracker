@@ -222,22 +222,8 @@ try:
 
             st.subheader("Receipts")
 
-            # Build HTML table
-            table_html = """
-            <table style="width:100%; border-collapse:collapse;">
-                <thead>
-                    <tr style="border-bottom: 2px solid #e0e0e0;">
-                        <th style="text-align:left; padding:8px;">Date</th>
-                        <th style="text-align:left; padding:8px;">Description</th>
-                        <th style="text-align:left; padding:8px;">Amount</th>
-                        <th style="text-align:left; padding:8px;">Category</th>
-                        <th style="text-align:left; padding:8px;">Who</th>
-                        <th style="text-align:left; padding:8px;">Receipt</th>
-                    </tr>
-                </thead>
-                <tbody>
-            """
-
+            # Build HTML table rows
+            rows_html = ""
             for i, row in df.iterrows():
                 if row["Receipt URL"]:
                     urls = row["Receipt URL"].split(" | ")
@@ -245,18 +231,30 @@ try:
                 else:
                     links = "—"
 
-                table_html += f"""
-                    <tr style="border-bottom: 1px solid #f0f0f0;">
-                        <td style="padding:8px;">{row['Date']}</td>
-                        <td style="padding:8px;">{row['Description']}</td>
-                        <td style="padding:8px;">${row['Amount']:,.2f}</td>
-                        <td style="padding:8px;">{row['Category']}</td>
-                        <td style="padding:8px;">{row['Who']}</td>
-                        <td style="padding:8px;">{links}</td>
-                    </tr>
-                """
+                rows_html += (
+                    '<tr style="border-bottom: 1px solid #f0f0f0;">'
+                    f'<td style="padding:8px;">{row["Date"]}</td>'
+                    f'<td style="padding:8px;">{row["Description"]}</td>'
+                    f'<td style="padding:8px;">${row["Amount"]:,.2f}</td>'
+                    f'<td style="padding:8px;">{row["Category"]}</td>'
+                    f'<td style="padding:8px;">{row["Who"]}</td>'
+                    f'<td style="padding:8px;">{links}</td>'
+                    '</tr>'
+                )
 
-            table_html += "</tbody></table>"
+            table_html = (
+                '<table style="width:100%; border-collapse:collapse;">'
+                '<thead><tr style="border-bottom: 2px solid #e0e0e0;">'
+                '<th style="text-align:left; padding:8px;">Date</th>'
+                '<th style="text-align:left; padding:8px;">Description</th>'
+                '<th style="text-align:left; padding:8px;">Amount</th>'
+                '<th style="text-align:left; padding:8px;">Category</th>'
+                '<th style="text-align:left; padding:8px;">Who</th>'
+                '<th style="text-align:left; padding:8px;">Receipt</th>'
+                '</tr></thead>'
+                '<tbody>' + rows_html + '</tbody>'
+                '</table>'
+            )
             st.markdown(table_html, unsafe_allow_html=True)
 
         else:
