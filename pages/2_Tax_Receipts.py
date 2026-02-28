@@ -96,7 +96,7 @@ st.markdown("""
 st.title("🧾 Tax Receipts")
 
 # --- NAVIGATION ---
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns([1, 1, 4])
 with col1:
     if st.button("💰 Budget Tracker", key="nav_budget"):
         st.switch_page("budget_app.py")
@@ -210,6 +210,7 @@ try:
             cat_summary = df.groupby("Category")["Amount"].sum().reset_index()
             cat_summary["Amount"] = cat_summary["Amount"].map("${:,.2f}".format)
             st.table(cat_summary)
+            cat_summary.index = range(1, len(cat_summary) + 1)
 
             st.subheader("All Receipts")
             for i, row in df.iterrows():
