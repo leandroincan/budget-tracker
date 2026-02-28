@@ -99,13 +99,17 @@ st.markdown("""
 st.title("🧾 Tax Receipts")
 
 # --- NAVIGATION ---
-col1, col2, col3 = st.columns([1.5, 1.5, 9])
-with col1:
-    if st.button("💰 Budget Tracker", key="nav_budget"):
-        st.switch_page("budget_app.py")
-with col2:
-    if st.button("🐾 Wolfie's Fund", key="nav_wolfie"):
-        st.switch_page("pages/1_Wolfie.py")
+st.markdown(
+    '<div style="display:flex; gap:8px; margin-bottom:8px;">'
+    '<a href="/" target="_self" style="text-decoration:none;">'
+    '<button style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">💰 Budget Tracker</button>'
+    '</a>'
+    '<a href="/1_Wolfie" target="_self" style="text-decoration:none;">'
+    '<button style="background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;">🐾 Wolfie\'s Fund</button>'
+    '</a>'
+    '</div>',
+    unsafe_allow_html=True
+)
 
 st.write("")
 
