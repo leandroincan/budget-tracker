@@ -112,15 +112,15 @@ if "form_key" not in st.session_state:
 
 # --- 4. INPUT SECTION ---
 fk = st.session_state.form_key
-categories = ["Medical", "Business", "Home Office", "Vehicle/Transportation"]
-years = ["2025", "2024", "2023"]
+categories = ["Health", "Business", "Home Office", "Vehicle/Transportation"]
+years = ["2025"]
 
-description = st.text_input("Description", placeholder="e.g. Physiotherapy", key=f"description_{fk}")
+description = st.text_input("Description", placeholder="e.g. Medical Appointment", key=f"description_{fk}")
 amount = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00", key=f"amount_{fk}")
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select category", key=f"category_{fk}")
 who = st.selectbox("Who?", ["Leandro", "Jonas"], index=None, placeholder="Select person", key=f"who_{fk}")
 year = st.selectbox("Tax Year", options=years, index=None, placeholder="Select year", key=f"year_{fk}")
-receipt_photo = st.file_uploader("Receipt Photo (Optional)", type=["jpg", "jpeg", "png", "pdf"], key=f"photo_{fk}")
+receipt_photos = st.file_uploader("Receipt Photos", type=["jpg", "jpeg", "png", "pdf"], accept_multiple_files=True, key=f"photo_{fk}")
 
 st.write("")
 
@@ -129,12 +129,17 @@ add_clicked = st.button("Add Receipt", type="primary", key="add_btn")
 if add_clicked:
     if description and amount and amount > 0 and category and who and year:
         today = datetime.now().strftime("%Y-%m-%d")
-        
-        # Upload photo to Cloudinary if provided
-        photo_url = ""
-        if receipt_photo:
-            upload_result = cloudinary.uploader.upload(receipt_photo, folder="tax_receipts")
-            photo_url = upload_result.get("secure_url", "")
+
+        # Upload photos to Cloudinary if provided
+        photo_urls = []
+        if receipt_photos:
+            for photo in receipt_photos:
+                upload_result = cloudinary.uploader.upload(photo, folder="tax_receipts")
+                url = upload_result.get("secure_url", "")
+                if url:
+                    photo_urls.append(url)
+
+        photo_url_string = " | ".join(photo_urls)
 
         notion.pages.create(
             parent={"database_id": TAX_DATABASE_ID},
@@ -145,10 +150,10 @@ if add_clicked:
                 "Who": {"select": {"name": who}},
                 "Date": {"date": {"start": today}},
                 "Year": {"select": {"name": year}},
-                "Receipt": {"url": photo_url if photo_url else None},
+                "Receipt": {"url": photo_url_string if photo_url_string else None},
             }
         )
-        st.success("Receipt added!" + (" 📸 Photo uploaded!" if photo_url else ""))
+        st.success(f"Receipt added!" + (f" 📸 {len(photo_urls)} photo(s) uploaded!" if photo_urls else ""))
         st.session_state.form_key += 1
         st.rerun()
     else:
@@ -211,7 +216,9 @@ try:
                 col1, col2 = st.columns([3, 1])
                 col1.write(f"**{row['Description']}** — ${row['Amount']:,.2f} | {row['Category']} | {row['Who']} | {row['Date']}")
                 if row["Receipt URL"]:
-                    col2.markdown(f"[📸 View]({row['Receipt URL']})", unsafe_allow_html=True)
+                    urls = row["Receipt URL"].split(" | ")
+                    for idx, url in enumerate(urls):
+                        col2.markdown(f"[📸 Photo {idx+1}]({url})", unsafe_allow_html=True)
                 else:
                     col2.write("No photo")
         else:
