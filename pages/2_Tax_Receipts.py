@@ -76,6 +76,8 @@ st.markdown("""
         font-size: 12px;
         cursor: pointer;
         transition: 0.2s;
+        color: #333333 !important;
+        text-decoration: none !important;
     }
 
     .nav-button:hover {
@@ -84,6 +86,11 @@ st.markdown("""
 
     .nav-button:active {
         background: #e0e0e0 !important;
+    }
+
+    a .nav-button, a:visited .nav-button, a:hover .nav-button {
+        color: #333333 !important;
+        text-decoration: none !important;
     }
 
     div[data-baseweb="select"] > div, 
@@ -138,7 +145,6 @@ if add_clicked:
     if description and amount and amount > 0 and category and who and year:
         today = datetime.now().strftime("%Y-%m-%d")
 
-        # Upload photos to Cloudinary if provided
         photo_urls = []
         if receipt_photos:
             for photo in receipt_photos:
@@ -214,22 +220,18 @@ try:
             col1.write(f"🧾 **Leandro:** `${l_total:,.2f}`")
             col2.write(f"🧾 **Jonas:** `${j_total:,.2f}`")
 
-            st.subheader("By Category")
-            cat_summary = df.groupby("Category")["Amount"].sum().reset_index()
-            cat_summary.index = range(1, len(cat_summary) + 1)
-            cat_summary["Amount"] = cat_summary["Amount"].map("${:,.2f}".format)
-            st.table(cat_summary)
-
             st.subheader("All Receipts")
             for i, row in df.iterrows():
-                col1, col2 = st.columns([3, 1])
-                col1.write(f"**{row['Description']}** — ${row['Amount']:,.2f} | {row['Category']} | {row['Who']} | {row['Date']}")
-                if row["Receipt URL"]:
-                    urls = row["Receipt URL"].split(" | ")
-                    for idx, url in enumerate(urls):
-                        col2.markdown(f"📸 [View]({url})", unsafe_allow_html=True)
-                else:
-                    col2.write("No photo")
+                col1, col2 = st.columns([4, 1])
+                with col1:
+                    st.write(f"**{row['Description']}** — \${row['Amount']:,.2f} | {row['Category']} | {row['Who']} | {row['Date']}")
+                with col2:
+                    if row["Receipt URL"]:
+                        urls = row["Receipt URL"].split(" | ")
+                        for idx, url in enumerate(urls):
+                            st.markdown(f"📸 [View]({url})", unsafe_allow_html=True)
+                    else:
+                        st.write("—")
         else:
             st.info(f"No receipts found for {selected_year}.")
 
