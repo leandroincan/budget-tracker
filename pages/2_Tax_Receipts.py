@@ -96,7 +96,7 @@ st.markdown("""
 st.title("🧾 Tax Receipts")
 
 # --- NAVIGATION ---
-col1, col2, col3 = st.columns([1, 1, 4])
+col1, col2, col3 = st.columns([2, 2, 3])
 with col1:
     if st.button("💰 Budget Tracker", key="nav_budget"):
         st.switch_page("budget_app.py")
