@@ -3,11 +3,19 @@ import streamlit as st
 from notion_client import Client
 import pandas as pd
 from datetime import datetime
+import cloudinary
+import cloudinary.uploader
 
 # --- 1. SETUP & CONFIG ---
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN") or st.secrets.get("NOTION_TOKEN")
 TAX_DATABASE_ID = os.environ.get("TAX_DATABASE_ID") or st.secrets.get("TAX_DATABASE_ID")
 notion = Client(auth=NOTION_TOKEN)
+
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET")
+)
 
 # --- 2. UI STYLING ---
 st.set_page_config(page_title="Tax Receipts", page_icon="🧾", layout="centered")
@@ -112,6 +120,7 @@ amount = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", 
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select category", key=f"category_{fk}")
 who = st.selectbox("Who?", ["Leandro", "Jonas"], index=None, placeholder="Select person", key=f"who_{fk}")
 year = st.selectbox("Tax Year", options=years, index=None, placeholder="Select year", key=f"year_{fk}")
+receipt_photo = st.file_uploader("Receipt Photo (Optional)", type=["jpg", "jpeg", "png", "pdf"], key=f"photo_{fk}")
 
 st.write("")
 
@@ -120,6 +129,13 @@ add_clicked = st.button("Add Receipt", type="primary", key="add_btn")
 if add_clicked:
     if description and amount and amount > 0 and category and who and year:
         today = datetime.now().strftime("%Y-%m-%d")
+        
+        # Upload photo to Cloudinary if provided
+        photo_url = ""
+        if receipt_photo:
+            upload_result = cloudinary.uploader.upload(receipt_photo, folder="tax_receipts")
+            photo_url = upload_result.get("secure_url", "")
+
         notion.pages.create(
             parent={"database_id": TAX_DATABASE_ID},
             properties={
@@ -129,9 +145,10 @@ if add_clicked:
                 "Who": {"select": {"name": who}},
                 "Date": {"date": {"start": today}},
                 "Year": {"select": {"name": year}},
+                "Receipt": {"url": photo_url if photo_url else None},
             }
         )
-        st.success("Receipt added!")
+        st.success("Receipt added!" + (" 📸 Photo uploaded!" if photo_url else ""))
         st.session_state.form_key += 1
         st.rerun()
     else:
@@ -149,14 +166,19 @@ try:
         desc_val = title_list[0]["text"]["content"] if title_list else ""
         date_val = p.get("Date", {}).get("date", {})
         date_str = date_val.get("start", "No Date") if date_val else "No Date"
+        category_val = p.get("Category", {}).get("select") or {}
+        who_val = p.get("Who", {}).get("select") or {}
+        year_val = p.get("Year", {}).get("select") or {}
+        receipt_url = p.get("Receipt", {}).get("url", "") or ""
 
         rows.append({
             "Date": date_str,
             "Description": desc_val,
             "Amount": p.get("Amount", {}).get("number") or 0.0,
-            "Category": p.get("Category", {}).get("select", {}).get("name", "Unknown"),
-            "Who": p.get("Who", {}).get("select", {}).get("name", "Unknown"),
-            "Year": p.get("Year", {}).get("select", {}).get("name", "Unknown"),
+            "Category": category_val.get("name", "Unknown"),
+            "Who": who_val.get("name", "Unknown"),
+            "Year": year_val.get("name", "Unknown"),
+            "Receipt URL": receipt_url,
         })
 
     df = pd.DataFrame(rows)
@@ -165,7 +187,6 @@ try:
     if not df.empty:
         st.divider()
 
-        # Filter by year
         selected_year = st.selectbox("Filter by Tax Year", options=["All"] + years, index=0, key="year_filter")
         if selected_year != "All":
             df = df[df["Year"] == selected_year]
@@ -186,10 +207,13 @@ try:
             st.table(cat_summary)
 
             st.subheader("All Receipts")
-            df_disp = df.copy()
-            df_disp.index = range(1, len(df_disp) + 1)
-            df_disp["Amount"] = df_disp["Amount"].map("${:,.2f}".format)
-            st.table(df_disp[["Date", "Description", "Amount", "Category", "Who"]])
+            for i, row in df.iterrows():
+                col1, col2 = st.columns([3, 1])
+                col1.write(f"**{row['Description']}** — ${row['Amount']:,.2f} | {row['Category']} | {row['Who']} | {row['Date']}")
+                if row["Receipt URL"]:
+                    col2.markdown(f"[📸 View]({row['Receipt URL']})", unsafe_allow_html=True)
+                else:
+                    col2.write("No photo")
         else:
             st.info(f"No receipts found for {selected_year}.")
 
