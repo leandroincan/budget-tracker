@@ -67,13 +67,16 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
+    /* White nav button */
     button.st-emotion-cache-jc12jo,
     button.st-emotion-cache-jc12jo:focus,
     button.st-emotion-cache-jc12jo:active {
         background-color: #ffffff !important;
         color: #333333 !important;
         font-weight: normal !important;
-        height: 2em !important;
+        white-space: nowrap !important;
+        height: auto !important;
+        padding: 0.4em 0.8em !important;
         font-size: 12px !important;
         border: 1px solid #e0e0e0 !important;
     }
@@ -96,7 +99,7 @@ st.markdown("""
 st.title("🧾 Tax Receipts")
 
 # --- NAVIGATION ---
-col1, col2, col3 = st.columns([2, 2, 8])
+col1, col2, col3 = st.columns([1.5, 1.5, 9])
 with col1:
     if st.button("💰 Budget Tracker", key="nav_budget"):
         st.switch_page("budget_app.py")
@@ -208,9 +211,9 @@ try:
 
             st.subheader("By Category")
             cat_summary = df.groupby("Category")["Amount"].sum().reset_index()
+            cat_summary.index = range(1, len(cat_summary) + 1)
             cat_summary["Amount"] = cat_summary["Amount"].map("${:,.2f}".format)
             st.table(cat_summary)
-            cat_summary.index = range(1, len(cat_summary) + 1)
 
             st.subheader("All Receipts")
             for i, row in df.iterrows():
