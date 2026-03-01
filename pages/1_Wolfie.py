@@ -65,21 +65,31 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
-    /* White nav button */
-    button.st-emotion-cache-jc12jo,
-    button.st-emotion-cache-jc12jo:focus,
-    button.st-emotion-cache-jc12jo:active {
-    background-color: #ffffff !important;
-    color: #333333 !important;
-    font-weight: normal !important;
-    height: 2em !important;
-    font-size: 12px !important;
-    border: 1px solid #e0e0e0 !important;
-    }    
+    /* HTML nav buttons */
+    .nav-button {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: #333333 !important;
+        text-decoration: none !important;
+    }
 
-button.st-emotion-cache-jc12jo:hover {
-    background-color: #f0f0f0 !important;
-}
+    .nav-button:hover {
+        background: #f0f0f0 !important;
+    }
+
+    .nav-button:active {
+        background: #e0e0e0 !important;
+    }
+
+    a .nav-button, a:visited .nav-button, a:hover .nav-button {
+        color: #333333 !important;
+        text-decoration: none !important;
+    }
 
     /* Green progress bar */
     .st-dc {
@@ -100,13 +110,17 @@ button.st-emotion-cache-jc12jo:hover {
 st.title("🐾 Wolfie's Surgery Fund")
 
 # --- NAVIGATION ---
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("💰 Budget Tracker", key="nav_budget"):
-        st.switch_page("budget_app.py")
-with col2:
-    if st.button("🧾 Tax Receipts", key="nav_tax"):
-        st.switch_page("pages/2_Tax_Receipts.py")
+st.markdown(
+    '<div style="display:flex; gap:8px; margin-bottom:8px;">'
+    '<a href="/" target="_self" style="text-decoration:none;">'
+    '<button class="nav-button">💰 Budget Tracker</button>'
+    '</a>'
+    '<a href="/Tax_Receipts" target="_self" style="text-decoration:none;">'
+    '<button class="nav-button">🧾 Tax Receipts</button>'
+    '</a>'
+    '</div>',
+    unsafe_allow_html=True
+)
 
 st.write("")
 
