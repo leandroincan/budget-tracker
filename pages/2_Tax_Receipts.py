@@ -127,8 +127,8 @@ if "form_key" not in st.session_state:
 
 # --- 4. INPUT SECTION ---
 fk = st.session_state.form_key
-categories = ["Health", "Business", "Home Office", "Vehicle/Transportation"]
-years = ["2025"]
+categories = ["Health", "Business", "Home Office", "Vehicle/Transportation", "School"]
+years = ["2026"]
 
 description = st.text_input("Description", placeholder="e.g. Medical Appointment", key=f"description_{fk}")
 amount = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00", key=f"amount_{fk}")
