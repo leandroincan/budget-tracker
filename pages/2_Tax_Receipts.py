@@ -135,6 +135,7 @@ amount = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", 
 category = st.selectbox("Category", options=categories, index=None, placeholder="Select category", key=f"category_{fk}")
 who = st.selectbox("Who?", ["Leandro", "Jonas"], index=None, placeholder="Select person", key=f"who_{fk}")
 year = st.selectbox("Tax Year", options=years, index=None, placeholder="Select year", key=f"year_{fk}")
+date = st.date_input("Date of Service", value=None, key=f"date_{fk}")
 receipt_photos = st.file_uploader("Receipt Photos", type=["jpg", "jpeg", "png", "pdf"], accept_multiple_files=True, key=f"photo_{fk}")
 
 st.write("")
@@ -162,7 +163,7 @@ if add_clicked:
                 "Amount": {"number": amount},
                 "Category": {"select": {"name": category}},
                 "Who": {"select": {"name": who}},
-                "Date": {"date": {"start": today}},
+                "Date": {"date": {"start": str(date) if date else today}},
                 "Year": {"select": {"name": year}},
                 "Receipt": {"url": photo_url_string if photo_url_string else None},
             }
