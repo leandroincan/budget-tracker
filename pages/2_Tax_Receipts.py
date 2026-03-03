@@ -100,6 +100,8 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
+    details summary::-webkit-details-marker { display: none; }
+
     table { width: 100%; }
     </style>
     """, unsafe_allow_html=True)
@@ -128,7 +130,7 @@ if "form_key" not in st.session_state:
 # --- 4. INPUT SECTION ---
 fk = st.session_state.form_key
 categories = ["Health", "Business", "Home Office", "Vehicle/Transportation", "School"]
-years = ["2026"]
+years = ["2026", "2025"]
 
 description = st.text_input("Description", placeholder="e.g. Medical Appointment", key=f"description_{fk}")
 amount = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00", key=f"amount_{fk}")
@@ -228,7 +230,11 @@ try:
             for i, row in df.iterrows():
                 if row["Receipt URL"]:
                     urls = row["Receipt URL"].split(" | ")
-                    links = " ".join([f'<a href="{u}" target="_blank">📸 View</a>' for u in urls])
+                    links = " ".join([
+                        f'<details style="display:inline;"><summary style="cursor:pointer; color:#007AFF; list-style:none;">📸 View</summary>'
+                        f'<div style="margin-top:8px;"><img src="{u}" style="max-width:300px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div></details>'
+                        for u in urls
+                    ])
                 else:
                     links = "—"
 
