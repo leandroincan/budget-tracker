@@ -231,8 +231,9 @@ try:
                     f'<td style="padding:8px 12px;">{row["Description"]}</td>'
                     f'<td style="padding:8px 12px;">${row["Amount"]:,.2f}</td>'
                     f'<td style="padding:8px 12px;">{row["Category"]}</td>'
-                    f'<td style="padding:8px 12px;">{row["Who"]}</td>'
-                    f'<td style="padding:8px 12px;">{links}</td>'
+                    f'<td style="padding:8px 12px; text-align:center;">{row["Who"]}</td>'
+                    f'<td style="padding:8px 12px; text-align:center;">{links}</td>'
+   
                     '</tr>'
                 )
 
