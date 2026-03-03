@@ -1,6 +1,5 @@
 import os
 import streamlit as st
-import streamlit.components.v1 as components
 from notion_client import Client
 import pandas as pd
 from datetime import datetime
@@ -218,93 +217,39 @@ try:
 
             st.subheader("Receipts")
 
-            # Build HTML table rows
             rows_html = ""
             for i, row in df.iterrows():
                 if row["Receipt URL"]:
                     urls = row["Receipt URL"].split(" | ")
-                    links = " ".join([
-                        f'<button class="view-btn" onclick="openModal(\'{u}\')">📸 View</button>'
-                        for u in urls
-                    ])
+                    links = " ".join([f'<a href="{u}" target="_blank" style="color:#007AFF;">📸 View</a>' for u in urls])
                 else:
                     links = "—"
 
                 rows_html += (
-                    '<tr>'
-                    f'<td style="padding:8px 12px; border-bottom:1px solid #f0f0f0;">{row["Date"]}</td>'
-                    f'<td style="padding:8px 12px; border-bottom:1px solid #f0f0f0;">{row["Description"]}</td>'
-                    f'<td style="padding:8px 12px; border-bottom:1px solid #f0f0f0;">${row["Amount"]:,.2f}</td>'
-                    f'<td style="padding:8px 12px; border-bottom:1px solid #f0f0f0;">{row["Category"]}</td>'
-                    f'<td style="padding:8px 12px; border-bottom:1px solid #f0f0f0;">{row["Who"]}</td>'
-                    f'<td style="padding:8px 12px; border-bottom:1px solid #f0f0f0;">{links}</td>'
+                    '<tr style="border-bottom: 1px solid #f0f0f0;">'
+                    f'<td style="padding:8px 12px;">{row["Date"]}</td>'
+                    f'<td style="padding:8px 12px;">{row["Description"]}</td>'
+                    f'<td style="padding:8px 12px;">${row["Amount"]:,.2f}</td>'
+                    f'<td style="padding:8px 12px;">{row["Category"]}</td>'
+                    f'<td style="padding:8px 12px;">{row["Who"]}</td>'
+                    f'<td style="padding:8px 12px;">{links}</td>'
                     '</tr>'
                 )
 
-            num_rows = len(df)
-            table_height = max(200, 50 + (num_rows * 48))
-
-            components.html(
-                f"""
-                <style>
-                body {{ margin: 0; font-family: sans-serif; font-size: 14px; }}
-                .modal-overlay {{
-                    display: none; position: fixed;
-                    top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.7);
-                    z-index: 9999; justify-content: center; align-items: center;
-                }}
-                .modal-overlay.active {{ display: flex; }}
-                .modal-content {{
-                    background: white; border-radius: 12px; padding: 16px;
-                    max-width: 90%; max-height: 90vh; overflow: auto; position: relative;
-                }}
-                .modal-content img {{ max-width: 100%; max-height: 80vh; border-radius: 8px; }}
-                .modal-close {{
-                    position: absolute; top: 8px; right: 12px;
-                    font-size: 24px; cursor: pointer; background: none; border: none; color: #333;
-                }}
-                .view-btn {{
-                    background: none; border: none; cursor: pointer;
-                    font-size: 13px; color: #333; padding: 0;
-                }}
-                .view-btn:hover {{ color: #555; }}
-                table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
-                th {{ text-align: left; padding: 8px 12px; font-weight: normal; color: #888; border-bottom: 1px solid #e0e0e0; }}
-                </style>
-
-                <div class="modal-overlay" id="photoModal">
-                    <div class="modal-content">
-                        <button class="modal-close" onclick="closeModal()">✕</button>
-                        <img id="modalImg" src="" alt="Receipt">
-                    </div>
-                </div>
-
-                <table>
-                    <thead><tr>
-                        <th>Date</th><th>Description</th><th>Amount</th>
-                        <th>Category</th><th>Who</th><th>Receipt</th>
-                    </tr></thead>
-                    <tbody>{rows_html}</tbody>
-                </table>
-
-                <script>
-                function openModal(url) {{
-                    document.getElementById('modalImg').src = url;
-                    document.getElementById('photoModal').classList.add('active');
-                }}
-                function closeModal() {{
-                    document.getElementById('photoModal').classList.remove('active');
-                    document.getElementById('modalImg').src = '';
-                }}
-                document.getElementById('photoModal').addEventListener('click', function(e) {{
-                    if (e.target === this) closeModal();
-                }});
-                </script>
-                """,
-                height=table_height,
-                scrolling=True
+            table_html = (
+                '<table style="width:100%; border-collapse:collapse; font-size:14px;">'
+                '<thead><tr style="border-bottom: 1px solid #e0e0e0;">'
+                '<th style="text-align:left; padding:8px 12px; font-weight:normal; color:#888;">Date</th>'
+                '<th style="text-align:left; padding:8px 12px; font-weight:normal; color:#888;">Description</th>'
+                '<th style="text-align:left; padding:8px 12px; font-weight:normal; color:#888;">Amount</th>'
+                '<th style="text-align:left; padding:8px 12px; font-weight:normal; color:#888;">Category</th>'
+                '<th style="text-align:left; padding:8px 12px; font-weight:normal; color:#888;">Who</th>'
+                '<th style="text-align:left; padding:8px 12px; font-weight:normal; color:#888;">Receipt</th>'
+                '</tr></thead>'
+                '<tbody>' + rows_html + '</tbody>'
+                '</table>'
             )
+            st.markdown(table_html, unsafe_allow_html=True)
 
         else:
             st.info(f"No receipts found for {selected_year}.")
