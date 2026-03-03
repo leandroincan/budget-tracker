@@ -100,10 +100,85 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
-    details summary::-webkit-details-marker { display: none; }
+    /* Modal styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        max-width: 90%;
+        max-height: 90vh;
+        overflow: auto;
+        position: relative;
+    }
+
+    .modal-content img {
+        max-width: 100%;
+        max-height: 80vh;
+        border-radius: 8px;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 8px; right: 12px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+        background: none;
+        border: none;
+    }
+
+    .view-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: #333333 !important;
+        padding: 0;
+    }
+
+    .view-btn:hover {
+        color: #555 !important;
+    }
 
     table { width: 100%; }
     </style>
+
+    <!-- Modal HTML -->
+    <div class="modal-overlay" id="photoModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <img id="modalImg" src="" alt="Receipt">
+        </div>
+    </div>
+
+    <script>
+    function openModal(url) {
+        document.getElementById('modalImg').src = url;
+        document.getElementById('photoModal').classList.add('active');
+    }
+    function closeModal() {
+        document.getElementById('photoModal').classList.remove('active');
+        document.getElementById('modalImg').src = '';
+    }
+    document.getElementById('photoModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    </script>
     """, unsafe_allow_html=True)
 
 st.title("🧾 Tax Receipts")
@@ -231,8 +306,7 @@ try:
                 if row["Receipt URL"]:
                     urls = row["Receipt URL"].split(" | ")
                     links = " ".join([
-                        f'<details style="display:inline;"><summary style="cursor:pointer; color:#007AFF; list-style:none;">📸 View</summary>'
-                        f'<div style="margin-top:8px;"><img src="{u}" style="max-width:300px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div></details>'
+                        f'<button class="view-btn" onclick="openModal(\'{u}\')">📸 View</button>'
                         for u in urls
                     ])
                 else:
