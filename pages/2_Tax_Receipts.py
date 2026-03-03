@@ -227,7 +227,7 @@ try:
 
                 rows_html += (
                     '<tr style="border-bottom: 1px solid #f0f0f0;">'
-                    f'<td style="padding:8px 12px;">{row["Date"]}</td>'
+                    f'<td style="padding:8px 12px; text-align:center;">{row["Date"]}</td>'
                     f'<td style="padding:8px 12px;">{row["Description"]}</td>'
                     f'<td style="padding:8px 12px;">${row["Amount"]:,.2f}</td>'
                     f'<td style="padding:8px 12px;">{row["Category"]}</td>'
