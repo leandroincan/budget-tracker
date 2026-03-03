@@ -221,7 +221,7 @@ try:
             for i, row in df.iterrows():
                 if row["Receipt URL"]:
                     urls = row["Receipt URL"].split(" | ")
-                    links = " ".join([f'<a href="{u}" target="_blank" style="color:#007AFF;">📸 View</a>' for u in urls])
+                    links = " ".join([f'<a href="{u}" target="_blank" style="color:#333333; text-decoration:none;">📸 View</a>' for u in urls])
                 else:
                     links = "—"
 
