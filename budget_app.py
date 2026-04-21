@@ -159,13 +159,13 @@ try:
     response = notion.databases.query(database_id=DATABASE_ID)
     results.extend(response.get("results", []))
 
-while response.get("has_more"):
-    response = notion.databases.query(
-        database_id=DATABASE_ID,
-        start_cursor=response.get("next_cursor")
-    )
-    results.extend(response.get("results", []))
-    
+    while response.get("has_more"):
+        response = notion.databases.query(
+            database_id=DATABASE_ID,
+            start_cursor=response.get("next_cursor")
+        )
+        results.extend(response.get("results", []))
+
     rows = []
     for page in results:
         p = page["properties"]
