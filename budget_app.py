@@ -32,7 +32,6 @@ st.markdown("""
         font-size: 16px !important;
     }
 
-    /* All buttons blue by default */
     .stButton > button {
         width: 100%;
         border-radius: 10px;
@@ -48,7 +47,6 @@ st.markdown("""
         background-color: #0056b3 !important;
     }
 
-    /* Green primary button */
     button[data-testid="stBaseButton-primary"],
     button[data-testid="stBaseButton-primary"]:focus,
     button[data-testid="stBaseButton-primary"]:active,
@@ -62,7 +60,6 @@ st.markdown("""
         border-color: #28A745 !important;
     }
 
-    /* HTML nav buttons */
     .nav-button {
         background: #ffffff;
         border: 1px solid #e0e0e0;
@@ -164,7 +161,6 @@ try:
             start_cursor=response.get("next_cursor")
         )
         results.extend(response.get("results", []))
-
     rows = []
     for page in results:
         p = page["properties"]
@@ -173,7 +169,6 @@ try:
             item_val = title_list[0]["text"]["content"] if title_list else "Untitled"
             date_val = p.get("Date", {}).get("date", {})
             date_str = date_val.get("start", "No Date") if date_val else "No Date"
-            
             rows.append({
                 "id": page["id"],
                 "Date": date_str,
@@ -181,31 +176,23 @@ try:
                 "Cost": p.get("Cost", {}).get("number") or 0.0,
                 "Who": p.get("Who", {}).get("select", {}).get("name", "Unknown")
             })
-    
     df = pd.DataFrame(rows)
-
-    # --- 6. DASHBOARD ---
     if not df.empty:
         st.divider()
         total = df["Cost"].sum()
         st.metric("**Total**", f"${total:,.2f}")
-        
         l_spent = df[df["Who"] == "Leandro"]["Cost"].sum()
         j_spent = df[df["Who"] == "Jonas"]["Cost"].sum()
-        
         l_owes = max(0.0, (j_spent - l_spent) / 2)
         j_owes = max(0.0, (l_spent - j_spent) / 2)
-
         col1, col2 = st.columns(2)
         col1.write(f"💳 **Leandro owes:** `${l_owes:,.2f}`")
         col2.write(f"💳 **Jonas owes:** `${j_owes:,.2f}`")
-
         st.subheader("Current Expenses")
         df_disp = df.copy()
         df_disp.index = range(1, len(df_disp) + 1)
         df_disp["Cost"] = df_disp["Cost"].map("${:,.2f}".format)
         st.table(df_disp[["Date", "Item", "Cost", "Who"]])
-
         st.divider()
         if st.button("Clear & Start New Round", key="clear_btn"):
             today = datetime.now().strftime("%Y-%m-%d")
@@ -222,6 +209,5 @@ try:
             for page_id in df["id"]:
                 notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
             st.rerun()
-
 except Exception as e:
     st.error(f"Error: {e}")
