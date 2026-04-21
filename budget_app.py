@@ -125,6 +125,7 @@ category = st.selectbox("Category", options=categories, index=None, placeholder=
 details = st.text_input("Details (Optional)", placeholder="e.g. Groceries", key=f"details_{fk}")
 cost = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, placeholder="0.00", key=f"cost_{fk}")
 who = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, placeholder="Select person", key=f"who_{fk}")
+"Date": {"date": {"start": today}},
 
 st.write("")
 
@@ -140,7 +141,7 @@ if add_clicked:
                 "Item": {"title": [{"text": {"content": final_item_name}}]},
                 "Cost": {"number": cost},
                 "Who": {"select": {"name": who}},
-                "Date": {"date": {"start": today}},
+                "Date": {"date": {"start": str(date) if date else today}},
                 "Archived": {"checkbox": False}
             }
         )
