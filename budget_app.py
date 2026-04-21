@@ -155,8 +155,16 @@ if add_clicked:
 
 # --- 5. DATA FETCHING ---
 try:
+    results = []
     response = notion.databases.query(database_id=DATABASE_ID)
-    results = response.get("results")
+    results.extend(response.get("results", []))
+
+while response.get("has_more"):
+    response = notion.databases.query(
+        database_id=DATABASE_ID,
+        start_cursor=response.get("next_cursor")
+    )
+    results.extend(response.get("results", []))
     
     rows = []
     for page in results:
