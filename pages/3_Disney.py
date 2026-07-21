@@ -3,11 +3,24 @@ import streamlit as st
 from notion_client import Client
 import pandas as pd
 from datetime import datetime
+import requests
 
 # --- 1. SETUP & CONFIG ---
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN") or st.secrets.get("NOTION_TOKEN")
 DISNEY_DATABASE_ID = os.environ.get("DISNEY_DATABASE_ID") or st.secrets.get("DISNEY_DATABASE_ID")
 notion = Client(auth=NOTION_TOKEN)
+
+# Pull live exchange rate and cache it for 1 hour so it doesn't slow down the app
+@st.cache_data(ttl=3600)
+def get_live_rate():
+    try:
+        url = "https://api.exchangerate-api.com/v4/latest/USD"
+        response = requests.get(url, timeout=5)
+        return float(response.json()["rates"]["CAD"])
+    except:
+        return 1.41  # Fallback if the API is ever down
+
+live_usd_cad = get_live_rate()
 
 # --- 2. UI STYLING ---
 st.set_page_config(page_title="Disney Trip", page_icon="🎡", layout="centered")
@@ -119,7 +132,7 @@ fk = st.session_state.form_key
 def add_expense(cat, det, amount, currency, rate, payer, date, phase):
     if cat and payer and amount and amount > 0:
         final_amount = amount * rate if currency == "USD" else amount
-        display_det = f"{det} (USD {amount:,.2f})" if currency == "USD" else det
+        display_det = f"{det} (USD {amount:,.2f} @ {rate:.2f})" if currency == "USD" else det
         final_name = f"{cat}: {display_det}" if display_det else cat
         
         notion.pages.create(
@@ -145,9 +158,10 @@ with tab1:
     det_pre = st.text_input("Details", placeholder="e.g. Airbnb", key=f"det_pre_{fk}")
     
     currency_pre = st.selectbox("Currency", ["CAD", "USD"], key=f"curr_pre_{fk}")
-    rate_pre = 1.41
+    rate_pre = 1.0
     if currency_pre == "USD":
-        rate_pre = st.number_input("USD to CAD Exchange Rate", min_value=1.0, value=1.41, step=0.01, format="%.2f", key=f"rate_pre_{fk}")
+        # Uses the live rate as the default, but lets you type over it
+        rate_pre = st.number_input("USD to CAD Exchange Rate", min_value=1.0, value=live_usd_cad, step=0.01, format="%.2f", key=f"rate_pre_{fk}")
     
     cost_pre = st.number_input("Amount", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_pre_{fk}")
     who_pre = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, key=f"who_pre_{fk}")
@@ -213,9 +227,10 @@ with tab2:
     det_daily = st.text_input("Details", placeholder="e.g. Dinner at Disney Springs", key=f"det_day_{fk}")
     
     currency_daily = st.selectbox("Currency", ["CAD", "USD"], key=f"curr_day_{fk}")
-    rate_daily = 1.41
+    rate_daily = 1.0
     if currency_daily == "USD":
-        rate_daily = st.number_input("USD to CAD Exchange Rate", min_value=1.0, value=1.41, step=0.01, format="%.2f", key=f"rate_day_{fk}")
+        # Uses the live rate as the default, but lets you type over it
+        rate_daily = st.number_input("USD to CAD Exchange Rate", min_value=1.0, value=live_usd_cad, step=0.01, format="%.2f", key=f"rate_day_{fk}")
         
     cost_daily = st.number_input("Amount", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_day_{fk}")
     who_daily = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, key=f"who_daily_{fk}")
