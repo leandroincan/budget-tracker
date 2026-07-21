@@ -110,21 +110,23 @@ st.markdown(
 st.write("")
 
 # --- TABS ---
-# Reduced to just 2 tabs
 tab1, tab2 = st.tabs(["📅 Pre-Trip", "🎢 During Trip"])
 
 if "form_key" not in st.session_state:
     st.session_state.form_key = 0
 fk = st.session_state.form_key
 
-def add_expense(cat, det, amount, payer, date, phase):
+def add_expense(cat, det, amount, currency, rate, payer, date, phase):
     if cat and payer and amount and amount > 0:
-        final_name = f"{cat}: {det}" if det else cat
+        final_amount = amount * rate if currency == "USD" else amount
+        display_det = f"{det} (USD {amount:,.2f})" if currency == "USD" else det
+        final_name = f"{cat}: {display_det}" if display_det else cat
+        
         notion.pages.create(
             parent={"database_id": DISNEY_DATABASE_ID},
             properties={
                 "Item": {"title": [{"text": {"content": final_name}}]},
-                "Cost": {"number": amount},
+                "Cost": {"number": final_amount},
                 "Who": {"select": {"name": payer}},
                 "Date": {"date": {"start": str(date) if date else datetime.now().strftime("%Y-%m-%d")}},
                 "Phase": {"select": {"name": phase}},
@@ -141,16 +143,22 @@ with tab1:
     st.subheader("Bookings & Tickets")
     cat_pre = st.selectbox("Category", ["Flights", "Hotel", "Disneyland Tickets", "Universal Tickets", "Other"], key=f"cat_pre_{fk}")
     det_pre = st.text_input("Details", placeholder="e.g. Airbnb", key=f"det_pre_{fk}")
-    cost_pre = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_pre_{fk}")
+    
+    currency_pre = st.selectbox("Currency", ["CAD", "USD"], key=f"curr_pre_{fk}")
+    rate_pre = 1.41
+    if currency_pre == "USD":
+        rate_pre = st.number_input("USD to CAD Exchange Rate", min_value=1.0, value=1.41, step=0.01, format="%.2f", key=f"rate_pre_{fk}")
+    
+    cost_pre = st.number_input("Amount", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_pre_{fk}")
     who_pre = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, key=f"who_pre_{fk}")
     date_pre = st.date_input("Date", value=None, key=f"date_pre_{fk}")
     
     if st.button("Add Fixed Cost", type="primary", key="btn_pre"):
-        add_expense(cat_pre, det_pre, cost_pre, who_pre, date_pre, "Pre-Trip")
+        add_expense(cat_pre, det_pre, cost_pre, currency_pre, rate_pre, who_pre, date_pre, "Pre-Trip")
 
     st.divider()
     
-    # --- DASHBOARD MOVED UNDER PRE-TRIP ---
+    # --- DASHBOARD ---
     try:
         results = notion.databases.query(database_id=DISNEY_DATABASE_ID).get("results", [])
         rows = []
@@ -197,15 +205,21 @@ with tab1:
                     notion.pages.update(page_id=page_id, properties={"Archived": {"checkbox": True}})
                 st.rerun()
     except Exception as e:
-        st.error(f"Error loading data. Did you add the new ID to your secrets? Details: {e}")
+        st.error(f"Error loading data: {e}")
 
 with tab2:
     st.subheader("Daily Spending")
     cat_daily = st.selectbox("Category", ["Food & Drinks", "Uber/Transit", "Souvenirs", "Misc"], key=f"cat_day_{fk}")
     det_daily = st.text_input("Details", placeholder="e.g. Dinner at Disney Springs", key=f"det_day_{fk}")
-    cost_daily = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_day_{fk}")
-    who_daily = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, key=f"who_day_{fk}")
-    date_daily = st.date_input("Date", value=None, key=f"date_day_{fk}")
+    
+    currency_daily = st.selectbox("Currency", ["CAD", "USD"], key=f"curr_day_{fk}")
+    rate_daily = 1.41
+    if currency_daily == "USD":
+        rate_daily = st.number_input("USD to CAD Exchange Rate", min_value=1.0, value=1.41, step=0.01, format="%.2f", key=f"rate_day_{fk}")
+        
+    cost_daily = st.number_input("Amount", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_day_{fk}")
+    who_daily = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, key=f"who_daily_{fk}")
+    date_daily = st.date_input("Date", value=None, key=f"date_daily_{fk}")
     
     if st.button("Add Daily Expense", type="primary", key="btn_daily"):
-        add_expense(cat_daily, det_daily, cost_daily, who_daily, date_daily, "Daily")
+        add_expense(cat_daily, det_daily, cost_daily, currency_daily, rate_daily, who_daily, date_daily, "Daily")
