@@ -110,7 +110,8 @@ st.markdown(
 st.write("")
 
 # --- TABS ---
-tab1, tab2, tab3 = st.tabs(["📅 Pre-Trip", "🎢 During Trip", "📊 Dashboard"])
+# Reduced to just 2 tabs
+tab1, tab2 = st.tabs(["📅 Pre-Trip", "🎢 During Trip"])
 
 if "form_key" not in st.session_state:
     st.session_state.form_key = 0
@@ -147,18 +148,9 @@ with tab1:
     if st.button("Add Fixed Cost", type="primary", key="btn_pre"):
         add_expense(cat_pre, det_pre, cost_pre, who_pre, date_pre, "Pre-Trip")
 
-with tab2:
-    st.subheader("Daily Spending")
-    cat_daily = st.selectbox("Category", ["Food & Drinks", "Uber/Transit", "Souvenirs", "Misc"], key=f"cat_day_{fk}")
-    det_daily = st.text_input("Details", placeholder="e.g. Dinner at Disney Springs", key=f"det_day_{fk}")
-    cost_daily = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_day_{fk}")
-    who_daily = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, key=f"who_day_{fk}")
-    date_daily = st.date_input("Date", value=None, key=f"date_day_{fk}")
+    st.divider()
     
-    if st.button("Add Daily Expense", type="primary", key="btn_daily"):
-        add_expense(cat_daily, det_daily, cost_daily, who_daily, date_daily, "Daily")
-
-with tab3:
+    # --- DASHBOARD MOVED UNDER PRE-TRIP ---
     try:
         results = notion.databases.query(database_id=DISNEY_DATABASE_ID).get("results", [])
         rows = []
@@ -206,3 +198,14 @@ with tab3:
                 st.rerun()
     except Exception as e:
         st.error(f"Error loading data. Did you add the new ID to your secrets? Details: {e}")
+
+with tab2:
+    st.subheader("Daily Spending")
+    cat_daily = st.selectbox("Category", ["Food & Drinks", "Uber/Transit", "Souvenirs", "Misc"], key=f"cat_day_{fk}")
+    det_daily = st.text_input("Details", placeholder="e.g. Dinner at Disney Springs", key=f"det_day_{fk}")
+    cost_daily = st.number_input("Amount ($)", min_value=0.0, step=0.01, format="%.2f", value=None, key=f"cost_day_{fk}")
+    who_daily = st.selectbox("Who paid?", ["Leandro", "Jonas"], index=None, key=f"who_day_{fk}")
+    date_daily = st.date_input("Date", value=None, key=f"date_day_{fk}")
+    
+    if st.button("Add Daily Expense", type="primary", key="btn_daily"):
+        add_expense(cat_daily, det_daily, cost_daily, who_daily, date_daily, "Daily")
