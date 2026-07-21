@@ -100,12 +100,15 @@ st.title("💰 Budget Tracker")
 
 # --- NAVIGATION ---
 st.markdown(
-    '<div style="display:flex; gap:8px; margin-bottom:8px;">'
+    '<div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">'
     '<a href="/Wolfie" target="_self" style="text-decoration:none;">'
     '<button class="nav-button">🐾 Wolfie\'s Fund</button>'
     '</a>'
     '<a href="/Tax_Receipts" target="_self" style="text-decoration:none;">'
     '<button class="nav-button">🧾 Tax Receipts</button>'
+    '</a>'
+    '<a href="/Disney" target="_self" style="text-decoration:none;">'
+    '<button class="nav-button">🎡 Disney</button>'
     '</a>'
     '</div>',
     unsafe_allow_html=True
